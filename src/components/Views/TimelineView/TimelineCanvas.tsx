@@ -155,10 +155,6 @@ export const TimelineCanvas: React.FC<TimelineCanvasProps> = ({ width, height })
     
     const currentX = timeToPixel(event.startTime);
     const isInViewport = currentX >= dynamicTimelineArea.x && currentX <= dynamicTimelineArea.x + dynamicTimelineArea.width;
-    
-    console.log(`开始拖拽事件: ${event.id}, 清除画布拖拽状态`);
-    console.log(`事件起始位置: ${currentX}px, 是否在视窗内: ${isInViewport}`);
-    console.log(`视窗范围: ${dynamicTimelineArea.x}px - ${dynamicTimelineArea.x + dynamicTimelineArea.width}px`);
   };
 
   // 处理事件拖拽结束
@@ -167,21 +163,13 @@ export const TimelineCanvas: React.FC<TimelineCanvasProps> = ({ width, height })
       e.cancelBubble = true; // 阻止事件冒泡
       e.evt?.stopPropagation?.(); // 停止事件传播
       
-      console.log(`结束拖拽事件: ${event.id}`);
-      console.log(`当前视口: startTime=${viewport.startTime}, endTime=${viewport.endTime}`);
-      
       // 获取拖拽后的位置
       const groupNode = e.target;
-      console.log(`拖拽目标类型: ${groupNode.getClassName()}`);
       
       // 如果目标不是 Group，尝试获取父级
       const actualGroup = groupNode.getClassName() === 'Group' ? groupNode : groupNode.getParent();
       
       const newX = actualGroup.x();
-      
-      console.log(`拖拽结束: 事件 ${event.id}, 新位置 X: ${newX}`);
-      console.log(`时间轴区域 X: ${dynamicTimelineArea.x}, 宽度: ${dynamicTimelineArea.width}`);
-      console.log(`事件是否在视窗内: ${newX >= dynamicTimelineArea.x && newX <= dynamicTimelineArea.x + dynamicTimelineArea.width}`);
       
       // 详细调试 pixelToTime 计算
       const timeRange = viewport.endTime - viewport.startTime;
@@ -190,18 +178,10 @@ export const TimelineCanvas: React.FC<TimelineCanvasProps> = ({ width, height })
       const timeOffset = pixelOffset / pixelPerTime;
       const calculatedTime = viewport.startTime + timeOffset;
       
-      console.log(`详细计算过程:`);
-      console.log(`  时间范围: ${timeRange} (${viewport.startTime} to ${viewport.endTime})`);
-      console.log(`  像素偏移: ${pixelOffset}px, 时间偏移: ${timeOffset}`);
-      console.log(`  计算出的时间: ${calculatedTime}`);
-      
       const rawTime = pixelToTime(newX);
-      console.log(`pixelToTime函数结果: ${rawTime}`);
       
       const newStartTime = Math.max(0, Math.round(rawTime));
       const finalTimeDifference = newStartTime - event.startTime;
-      
-      console.log(`时间转换: 原时间 ${event.startTime} -> 新时间 ${newStartTime}, 差值: ${finalTimeDifference}`);
       
       // 更新事件数据
       const updatedEvent: Partial<TimelineEvent> = {
@@ -209,8 +189,6 @@ export const TimelineCanvas: React.FC<TimelineCanvasProps> = ({ width, height })
         endTime: event.endTime ? Math.max(newStartTime, event.endTime + finalTimeDifference) : undefined,
         updatedAt: new Date().toISOString(),
       };
-      
-      console.log(`最终更新: startTime=${updatedEvent.startTime}, endTime=${updatedEvent.endTime}`);
       
       updateEvent(event.id, updatedEvent);
       
@@ -221,8 +199,6 @@ export const TimelineCanvas: React.FC<TimelineCanvasProps> = ({ width, height })
                               eventEndX < dynamicTimelineArea.x);
       
       if (!isEventVisible) {
-        console.log(`事件被拖拽到视窗外，自动调整视窗位置`);
-        
         // 计算需要调整的时间偏移
         let timeAdjustment = 0;
         
@@ -242,7 +218,6 @@ export const TimelineCanvas: React.FC<TimelineCanvasProps> = ({ width, height })
             endTime: viewport.endTime + timeAdjustment,
             centerTime: viewport.centerTime + timeAdjustment,
           });
-          console.log(`视窗已调整，时间偏移: ${timeAdjustment}`);
         }
       }
       
@@ -380,8 +355,6 @@ export const TimelineCanvas: React.FC<TimelineCanvasProps> = ({ width, height })
     const targetName = target.getClassName();
     const targetElementName = target.name?.() || '';
     
-    console.log(`鼠标按下目标: ${targetName}, name: ${targetElementName}`);
-    
     // 允许在以下情况启动画布拖拽：
     // 1. 点击 Stage 本身（空白区域）
     // 2. 点击标识为背景的元素
@@ -392,13 +365,11 @@ export const TimelineCanvas: React.FC<TimelineCanvasProps> = ({ width, height })
     );
     
     if (!isClickableBackground) {
-      console.log(`点击的不是可拖拽背景，不启动画布拖拽。目标: ${targetName}, name: ${targetElementName}`);
       return;
     }
     
     // 如果正在拖拽事件，不处理画布拖拽
     if (draggedEventId) {
-      console.log(`正在拖拽事件，不启动画布拖拽`);
       return;
     }
     
@@ -408,16 +379,11 @@ export const TimelineCanvas: React.FC<TimelineCanvasProps> = ({ width, height })
     const hasSelectedEvents = selectedEvents.length > 0;
     
     if (hasSelectedEvents) {
-      console.log(`有事件被选中，不允许拖动时间轴。选中事件数量: ${selectedEvents.length}`);
-      console.log(`提示：请先取消选择事件（点击空白区域），然后再拖动时间轴`);
-      
       // 可以在这里添加用户提示，比如显示一个临时的提示消息
       // 暂时只在控制台显示，后续可以考虑添加UI提示
       return;
     }
     
-    console.log(`开始画布拖拽 - 点击了: ${targetElementName || targetName}`);
-    console.log(`已统一事件处理：所有装饰元素已设置为不响应事件，确保拖拽一致性`);
     setIsDragging(true);
     setDragStart({ x: e.evt.clientX, y: e.evt.clientY });
   };
@@ -425,7 +391,6 @@ export const TimelineCanvas: React.FC<TimelineCanvasProps> = ({ width, height })
   const handleMouseMove = (e: any) => {
     // 如果正在拖拽事件，不处理画布平移
     if (draggedEventId) {
-      console.log(`跳过画布平移：正在拖拽事件 ${draggedEventId}`);
       return;
     }
     
@@ -462,9 +427,6 @@ export const TimelineCanvas: React.FC<TimelineCanvasProps> = ({ width, height })
   };
 
   const handleMouseUp = () => {
-    if (isDragging) {
-      console.log(`结束画布拖拽`);
-    }
     setIsDragging(false);
     // 不要重置 draggedEventId，这会在事件拖拽结束时处理
   };

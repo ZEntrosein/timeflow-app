@@ -6,6 +6,7 @@ import { Sidebar } from './Sidebar';
 import { Inspector } from './Inspector';
 import { ContextBar } from './ContextBar';
 import { ViewContainer } from './ViewContainer';
+import { AddObjectDialog } from '../Dialogs/AddObjectDialog';
 
 interface MainLayoutProps {
   children?: React.ReactNode;
@@ -18,6 +19,8 @@ export const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
     inspectorVisible,
     currentView,
     getCurrentTheme,
+    dialogs,
+    closeAddObjectDialog,
   } = useUIStore();
 
   const currentTheme = getCurrentTheme();
@@ -59,13 +62,19 @@ export const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
         {/* 检查器面板 */}
         {inspectorVisible && (
           <div 
-            className={`${currentTheme.ui.panel} ${currentTheme.border.primary} border-l flex-shrink-0`}
+            className={`${currentTheme.ui.panel} ${currentTheme.border.primary} border-l flex-shrink-0 h-full`}
             style={{ width: layoutConfig.inspectorWidth }}
           >
             <Inspector />
           </div>
         )}
       </div>
+
+      {/* 对话框 */}
+      <AddObjectDialog 
+        isOpen={dialogs.addObject} 
+        onClose={closeAddObjectDialog} 
+      />
     </div>
   );
 }; 

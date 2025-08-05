@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Event, WorldObject, Attribute, AttributeType } from '../types';
+import { Event, WorldObject, Attribute, AttributeType, AttributeValue } from '../types';
 import { defaultStorageService } from '../services';
 import { validateEvent } from '../utils/validation';
 import './EventManager.css';
@@ -86,7 +86,7 @@ export const EventManager: React.FC<EventManagerProps> = ({
         objectId: selectedObject.id,
         attributeId: selectedAttribute.id,
         newValue,
-        oldValue: selectedAttribute.value,
+        oldValue: selectedAttribute.value as string | number | null,
         description: formData.description,
         createdAt: new Date().toISOString()
       };
@@ -162,6 +162,7 @@ export const EventManager: React.FC<EventManagerProps> = ({
             value={formData.newValue}
             onChange={(e) => setFormData(prev => ({ ...prev, newValue: e.target.value }))}
             required
+            className="w-full px-3 py-2 border border-gray-300 rounded-md bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
           >
             <option value="">选择枚举值</option>
             {selectedAttribute.enumValues?.map(value => (
@@ -198,6 +199,7 @@ export const EventManager: React.FC<EventManagerProps> = ({
               value={selectedObject?.id || ''}
               onChange={(e) => handleObjectSelect(e.target.value)}
               required
+              className="w-full px-3 py-2 border border-gray-300 rounded-md bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             >
               <option value="">请选择对象</option>
               {objects.map(obj => (
@@ -213,6 +215,7 @@ export const EventManager: React.FC<EventManagerProps> = ({
                 value={selectedAttribute?.id || ''}
                 onChange={(e) => handleAttributeSelect(e.target.value)}
                 required
+                className="w-full px-3 py-2 border border-gray-300 rounded-md bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               >
                 <option value="">请选择属性</option>
                 {selectedObject.attributes.map(attr => (

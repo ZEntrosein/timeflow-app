@@ -375,7 +375,11 @@ export const ObjectStateDisplay: React.FC<ObjectStateDisplayProps> = ({
                     </div>
                     <div>
                       <label>类型：</label>
-                      <select value={newAttrData.type} onChange={e=>setNewAttrData(d=>({...d,type:e.target.value as AttributeType}))}>
+                      <select 
+                        value={newAttrData.type} 
+                        onChange={e=>setNewAttrData(d=>({...d,type:e.target.value as AttributeType}))}
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      >
                         <option value={AttributeType.TEXT}>文本</option>
                         <option value={AttributeType.NUMBER}>数字</option>
                         <option value={AttributeType.ENUM}>枚举</option>

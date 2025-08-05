@@ -277,20 +277,20 @@ export const TimelineView: React.FC = () => {
               </button>
             </div>
           )}
-          
-          <div className="flex items-center space-x-2">
-            <button 
+        
+        <div className="flex items-center space-x-2">
+          <button 
               onClick={() => openAddEventDialog()}
               className={`px-3 py-1 rounded text-xs hover:opacity-80 ${currentTheme.name === 'light' ? 'bg-blue-500 text-white' : 'bg-blue-600 text-blue-100'}`}
             >
               + 事件
-            </button>
-            <button 
-              onClick={handleResetView}
+          </button>
+          <button 
+            onClick={handleResetView}
               className={`px-2 py-1 border rounded text-xs hover:opacity-80 ${currentTheme.background.secondary} ${currentTheme.border.primary} ${currentTheme.text.secondary}`}
-            >
-              重置视图
-            </button>
+          >
+            重置视图
+          </button>
           </div>
         </div>
       </div>

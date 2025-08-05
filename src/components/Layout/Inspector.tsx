@@ -1,16 +1,18 @@
 import React, { useState, useEffect } from 'react';
 import { useUIStore, useSelectionStore, useProjectStore } from '../../store';
 import { INSPECTOR_PANELS } from '../../constants/views';
-import { InspectorPanel, TimelineEvent, WorldObject, Attribute, AttributeType } from '../../types';
+import { InspectorPanel, TimelineEvent, WorldObject, Attribute, AttributeType, AttributeValue } from '../../types';
+import { AttributeEditor } from '../UI/AttributeEditor/AttributeEditor';
+import { getTemplatesForObjectType, SYSTEM_TEMPLATES } from '../../constants/attributeTemplates';
 
-// 格式化显示值
+// 格式化显示值 - 保留用于基础字段
 const formatDisplayValue = (value: any, type: 'text' | 'number' | 'textarea' = 'text') => {
   if (value === null || value === undefined) return '';
   if (type === 'number') return String(value);
   return String(value);
 };
 
-// 可编辑字段组件
+// 基础可编辑字段组件 - 用于非属性的基础字段
 interface EditableFieldProps {
   label: string;
   value: string | number | undefined;
@@ -31,7 +33,7 @@ const EditableField: React.FC<EditableFieldProps> = ({
   error,
 }) => {
   return (
-    <div>
+    <div className="mb-4">
       <label className="block text-xs font-medium text-gray-600 mb-1">{label}</label>
       {type === 'textarea' ? (
         <textarea
@@ -75,15 +77,17 @@ export const Inspector: React.FC = () => {
   // 表单状态
   const [formData, setFormData] = useState<any>(null);
   const [errors, setErrors] = useState<Record<string, string>>({});
+  const [availableTemplates, setAvailableTemplates] = useState<any[]>([]);
 
   // 当选择改变时更新表单数据
   useEffect(() => {
     if (!singleItem) {
       setFormData(null);
       setErrors({});
+      setAvailableTemplates([]);
       return;
     }
-
+    
     const { type, id } = singleItem;
     let data;
     if (type === 'event') {
@@ -97,8 +101,12 @@ export const Inspector: React.FC = () => {
           category: data.category || '',
           location: data.location || '',
           tags: data.tags ? data.tags.join(', ') : '',
+          attributes: data.attributes || [],
         });
       }
+      // 获取事件模板
+      const eventTemplate = SYSTEM_TEMPLATES.find(t => t.id === 'event');
+      setAvailableTemplates(eventTemplate ? [eventTemplate] : []);
     } else {
       data = getObject(id);
       if (data) {
@@ -110,6 +118,9 @@ export const Inspector: React.FC = () => {
           attributes: data.attributes || [],
         });
       }
+      // 获取对象适用的模板
+      const templates = getTemplatesForObjectType(type as any);
+      setAvailableTemplates(templates);
     }
   }, [singleItem, getEvent, getObject]);
 
@@ -160,10 +171,131 @@ export const Inspector: React.FC = () => {
     });
   };
 
+  // 处理属性更新
+  const handleAttributeChange = (attributeId: string, newValue: AttributeValue) => {
+    const updatedAttributes = formData.attributes.map((attr: Attribute) =>
+      attr.id === attributeId 
+        ? { ...attr, value: newValue, updatedAt: new Date().toISOString() }
+        : attr
+    );
+    handleFieldChange('attributes', updatedAttributes);
+  };
+
+  // 处理属性配置更新（例如多选选项）
+  const handleAttributeConfigChange = (attributeId: string, newConfig: Partial<Attribute>) => {
+    const updatedAttributes = formData.attributes.map((attr: Attribute) =>
+      attr.id === attributeId 
+        ? { ...attr, ...newConfig, updatedAt: new Date().toISOString() }
+        : attr
+    );
+    handleFieldChange('attributes', updatedAttributes);
+  };
+
+  // 添加新属性
+  const handleAddAttribute = (template?: any) => {
+    let newAttribute: Attribute;
+    
+    if (template) {
+      // 从模板创建属性
+      newAttribute = {
+        ...template,
+      id: `attr-${Date.now()}`,
+        value: template.type === AttributeType.BOOLEAN ? false : 
+               template.type === AttributeType.NUMBER ? 0 :
+               template.type === AttributeType.LIST ? [] :
+               template.type === AttributeType.MULTI_SELECT ? [] : '',
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString()
+    };
+    } else {
+      // 创建默认属性，但让用户选择类型
+      const attributeName = prompt('请输入属性名称:');
+      if (!attributeName?.trim()) return;
+      
+      // 简单的类型选择
+      const attributeType = prompt(`请选择属性类型:
+1 - 文本 (text)
+2 - 数字 (number) 
+3 - 日期 (date)
+4 - 布尔值 (boolean)
+5 - 列表 (list)
+6 - 多选 (multi-select)
+7 - 邮箱 (email)
+8 - 链接 (url)
+9 - 电话 (phone)
+10 - 颜色 (color)
+11 - 评分 (rating)
+12 - 进度 (progress)
+
+请输入数字 (1-12):`);
+      
+      const typeMap: Record<string, AttributeType> = {
+        '1': AttributeType.TEXT,
+        '2': AttributeType.NUMBER,
+        '3': AttributeType.DATE,
+        '4': AttributeType.BOOLEAN,
+        '5': AttributeType.LIST,
+        '6': AttributeType.MULTI_SELECT,
+        '7': AttributeType.EMAIL,
+        '8': AttributeType.URL,
+        '9': AttributeType.PHONE,
+        '10': AttributeType.COLOR,
+        '11': AttributeType.RATING,
+        '12': AttributeType.PROGRESS
+      };
+      
+      const selectedType = typeMap[attributeType || '1'] || AttributeType.TEXT;
+      
+      newAttribute = {
+        id: `attr-${Date.now()}`,
+        name: attributeName.trim(),
+        type: selectedType,
+        value: selectedType === AttributeType.BOOLEAN ? false : 
+               selectedType === AttributeType.NUMBER ? 0 :
+               selectedType === AttributeType.LIST ? [] :
+               selectedType === AttributeType.MULTI_SELECT ? [] : '',
+        description: '',
+        showInTable: true,
+        searchable: true,
+        sortOrder: (formData.attributes?.length || 0) + 1,
+        group: '自定义',
+        createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString()
+        };
+      }
+
+    handleFieldChange('attributes', [...(formData.attributes || []), newAttribute]);
+  };
+
+  // 删除属性
+  const handleRemoveAttribute = (attributeId: string) => {
+    const updatedAttributes = formData.attributes.filter((attr: Attribute) => attr.id !== attributeId);
+    handleFieldChange('attributes', updatedAttributes);
+  };
+
+  // 应用模板
+  const handleApplyTemplate = (templateId: string) => {
+    const template = availableTemplates.find(t => t.id === templateId);
+    if (!template) return;
+
+    const templateAttributes = template.attributes.map((attr: any) => ({
+      ...attr,
+      id: `attr-${Date.now()}-${Math.random()}`,
+      value: attr.type === AttributeType.BOOLEAN ? false : 
+             attr.type === AttributeType.NUMBER ? 0 :
+             attr.type === AttributeType.LIST ? [] :
+             attr.type === AttributeType.MULTI_SELECT ? [] : '',
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString()
+    }));
+
+    handleFieldChange('attributes', [...(formData.attributes || []), ...templateAttributes]);
+  };
+
   // 自动保存
   const handleAutoSave = (data: any) => {
     if (!singleItem || !data) return;
-
+    
     const { type, id } = singleItem;
 
     // 处理标签
@@ -181,6 +313,7 @@ export const Inspector: React.FC = () => {
           category: data.category || undefined,
           location: data.location?.trim() || undefined,
           tags: tagsArray,
+          attributes: data.attributes,
           updatedAt: new Date().toISOString(),
         };
         updateEvent(id, updatedEvent);
@@ -238,17 +371,29 @@ export const Inspector: React.FC = () => {
         </div>
       );
     } else {
-      const startTimeAttr = formData.attributes?.find((attr: Attribute) => attr.name === 'startTime');
+      // 查找日期类型的属性
+      const dateAttributes = formData.attributes?.filter((attr: Attribute) => 
+        attr.type === AttributeType.DATE
+      ) || [];
+      
       return (
         <div className="p-4">
           <h4 className="text-sm font-medium text-gray-700 mb-3">📅 对象时间</h4>
           <div className="space-y-3">
-            {startTimeAttr && (
-              <div>
-                <label className="block text-xs font-medium text-gray-600 mb-1">出现时间</label>
-                <div className="px-3 py-2 text-sm bg-gray-100 rounded border">
-                  时间点: {startTimeAttr.value}
-                </div>
+            {dateAttributes.length > 0 ? (
+              dateAttributes.map((attr: Attribute) => (
+                <AttributeEditor
+                  key={attr.id}
+                  attribute={attr}
+                  value={attr.value}
+                  onChange={(value) => handleAttributeChange(attr.id, value)}
+                  onConfigChange={(config) => handleAttributeConfigChange(attr.id, config)}
+                  showValidation={true}
+                />
+              ))
+            ) : (
+              <div className="text-sm text-gray-500 bg-gray-50 p-3 rounded border">
+                暂无日期属性，可在属性面板中添加
               </div>
             )}
           </div>
@@ -265,43 +410,129 @@ export const Inspector: React.FC = () => {
       return (
         <div className="p-4">
           <h4 className="text-sm font-medium text-gray-700 mb-3">📋 事件属性</h4>
-          <div className="space-y-3">
-            <EditableField
-              label="标题"
-              value={formData.title}
-              fieldKey="title"
-              onChange={(value) => handleFieldChange('title', value)}
-              error={errors.title}
-            />
-            <EditableField
-              label="描述"
-              value={formData.description}
-              fieldKey="description"
-              type="textarea"
-              placeholder="事件描述..."
-              onChange={(value) => handleFieldChange('description', value)}
-            />
-            <EditableField
-              label="类型"
-              value={formData.category}
-              fieldKey="category"
-              placeholder="事件类型..."
-              onChange={(value) => handleFieldChange('category', value)}
-            />
-            <EditableField
-              label="地点"
-              value={formData.location}
-              fieldKey="location"
-              placeholder="事件地点..."
-              onChange={(value) => handleFieldChange('location', value)}
-            />
-            <EditableField
-              label="标签"
-              value={formData.tags}
-              fieldKey="tags"
-              placeholder="标签1, 标签2, ..."
-              onChange={(value) => handleFieldChange('tags', value)}
-            />
+          <div className="space-y-4">
+            {/* 基础属性 */}
+            <div className="bg-white p-4 rounded-lg border">
+              <h5 className="text-xs font-medium text-gray-600 mb-3">基础信息</h5>
+              <div className="space-y-3">
+                <EditableField
+                  label="标题"
+                  value={formData.title}
+                  fieldKey="title"
+                  onChange={(value) => handleFieldChange('title', value)}
+                  error={errors.title}
+                />
+                <EditableField
+                  label="描述"
+                  value={formData.description}
+                  fieldKey="description"
+                  type="textarea"
+                  placeholder="事件描述..."
+                  onChange={(value) => handleFieldChange('description', value)}
+                />
+                <EditableField
+                  label="类型"
+                  value={formData.category}
+                  fieldKey="category"
+                  placeholder="事件类型..."
+                  onChange={(value) => handleFieldChange('category', value)}
+                />
+                <EditableField
+                  label="地点"
+                  value={formData.location}
+                  fieldKey="location"
+                  placeholder="事件地点..."
+                  onChange={(value) => handleFieldChange('location', value)}
+                />
+                <EditableField
+                  label="标签"
+                  value={formData.tags}
+                  fieldKey="tags"
+                  placeholder="标签1, 标签2, ..."
+                  onChange={(value) => handleFieldChange('tags', value)}
+                />
+              </div>
+            </div>
+
+            {/* 自定义属性 */}
+            <div className="bg-white p-4 rounded-lg border">
+              <div className="flex items-center justify-between mb-3">
+                <h5 className="text-xs font-medium text-gray-600">自定义属性</h5>
+                <div className="flex items-center space-x-2">
+                  {availableTemplates.length > 0 && (
+                    <div className="relative">
+                      <select
+                        onChange={(e) => e.target.value && handleApplyTemplate(e.target.value)}
+                        value=""
+                        className="text-xs border border-gray-300 rounded px-2 py-1 pr-6 bg-white"
+                        title={`找到 ${availableTemplates.length} 个可用模板`}
+                      >
+                        <option value="">📋 应用模板...</option>
+                        {availableTemplates.map(template => (
+                          <option 
+                            key={template.id} 
+                            value={template.id}
+                            title={template.description}
+                          >
+                            {template.icon} {template.name} ({template.attributes.length} 属性)
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+                  )}
+                  <button
+                    onClick={() => handleAddAttribute()}
+                    className="text-xs text-green-600 hover:text-green-800 px-2 py-1 rounded bg-green-50 hover:bg-green-100"
+                  >
+                    + 添加属性
+                  </button>
+                </div>
+              </div>
+              
+              {formData.attributes && formData.attributes.length > 0 ? (
+                               <div className="space-y-4">
+                 {formData.attributes.map((attr: Attribute) => (
+                   <div key={attr.id} className="bg-gray-50 p-3 rounded border">
+                     <div className="flex items-start justify-between mb-2">
+                       <div className="flex-1 min-w-0">
+                         <h6 className="text-sm font-medium text-gray-700 truncate">
+                           {attr.name}
+                         </h6>
+                         {attr.description && (
+                           <p className="text-xs text-gray-500 mt-1">
+                             {attr.description}
+                           </p>
+                         )}
+                       </div>
+                       <button
+                         onClick={() => handleRemoveAttribute(attr.id)}
+                         className="ml-2 text-red-500 hover:text-red-700 text-lg leading-none flex-shrink-0"
+                         title="删除属性"
+                       >
+                         ×
+                       </button>
+                     </div>
+                     <div className="mt-2">
+                       <AttributeEditor
+                         attribute={attr}
+                         value={attr.value}
+                         onChange={(value) => handleAttributeChange(attr.id, value)}
+                         onConfigChange={(config) => handleAttributeConfigChange(attr.id, config)}
+                         showValidation={true}
+                         className="compact"
+                       />
+                     </div>
+                   </div>
+                 ))}
+              </div>
+              ) : (
+                <div className="text-sm text-gray-500 bg-gray-50 p-3 rounded border text-center">
+                  <div className="text-2xl mb-2">📝</div>
+                  <div>暂无自定义属性</div>
+                  <div className="text-xs mt-1">点击"+ 添加属性"或"应用模板"开始</div>
+                </div>
+              )}
+            </div>
           </div>
         </div>
       );
@@ -309,120 +540,120 @@ export const Inspector: React.FC = () => {
       return (
         <div className="p-4">
           <h4 className="text-sm font-medium text-gray-700 mb-3">📋 对象属性</h4>
-          <div className="space-y-3">
-            <EditableField
-              label="名称"
-              value={formData.name}
-              fieldKey="name"
-              onChange={(value) => handleFieldChange('name', value)}
-              error={errors.name}
-            />
-            <EditableField
-              label="描述"
-              value={formData.description}
-              fieldKey="description"
-              type="textarea"
-              placeholder="对象描述..."
-              onChange={(value) => handleFieldChange('description', value)}
-            />
-            <EditableField
-              label="类型"
-              value={formData.category}
-              fieldKey="category"
-              onChange={(value) => handleFieldChange('category', value)}
-            />
-            <EditableField
-              label="标签"
-              value={formData.tags}
-              fieldKey="tags"
-              placeholder="标签1, 标签2, ..."
-              onChange={(value) => handleFieldChange('tags', value)}
-            />
+          <div className="space-y-4">
+            {/* 基础属性 */}
+            <div className="bg-white p-4 rounded-lg border">
+              <h5 className="text-xs font-medium text-gray-600 mb-3">基础信息</h5>
+              <div className="space-y-3">
+                <EditableField
+                  label="名称"
+                  value={formData.name}
+                  fieldKey="name"
+                  onChange={(value) => handleFieldChange('name', value)}
+                  error={errors.name}
+                />
+                <EditableField
+                  label="描述"
+                  value={formData.description}
+                  fieldKey="description"
+                  type="textarea"
+                  placeholder="对象描述..."
+                  onChange={(value) => handleFieldChange('description', value)}
+                />
+                <EditableField
+                  label="类型"
+                  value={formData.category}
+                  fieldKey="category"
+                  onChange={(value) => handleFieldChange('category', value)}
+                />
+                <EditableField
+                  label="标签"
+                  value={formData.tags}
+                  fieldKey="tags"
+                  placeholder="标签1, 标签2, ..."
+                  onChange={(value) => handleFieldChange('tags', value)}
+                />
+              </div>
+            </div>
             
             {/* 自定义属性 */}
-            <div>
-              <div className="flex items-center justify-between mb-2">
-                <label className="block text-xs font-medium text-gray-600">自定义属性</label>
-                <button
-                  onClick={() => {
-                    const newAttr: Attribute = {
-                      id: `attr-${Date.now()}`,
-                      name: '新属性',
-                      value: '',
-                      type: AttributeType.TEXT,
-                      createdAt: new Date().toISOString(),
-                      updatedAt: new Date().toISOString()
-                    };
-                    handleFieldChange('attributes', [...(formData.attributes || []), newAttr]);
-                  }}
-                  className="text-xs text-green-600 hover:text-green-800 px-2 py-1 rounded bg-green-50 hover:bg-green-100"
-                >
-                  + 添加
-                </button>
+            <div className="bg-white p-4 rounded-lg border">
+              <div className="flex items-center justify-between mb-3">
+                <h5 className="text-xs font-medium text-gray-600">自定义属性</h5>
+                <div className="flex items-center space-x-2">
+                  {availableTemplates.length > 0 && (
+                    <div className="relative">
+                      <select
+                        onChange={(e) => e.target.value && handleApplyTemplate(e.target.value)}
+                        value=""
+                        className="text-xs border border-gray-300 rounded px-2 py-1 pr-6 bg-white"
+                        title={`找到 ${availableTemplates.length} 个可用模板`}
+                      >
+                        <option value="">📋 应用模板...</option>
+                        {availableTemplates.map(template => (
+                          <option 
+                            key={template.id} 
+                            value={template.id}
+                            title={template.description}
+                          >
+                            {template.icon} {template.name} ({template.attributes.length} 属性)
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+                  )}
+                  <button
+                    onClick={() => handleAddAttribute()}
+                    className="text-xs text-green-600 hover:text-green-800 px-2 py-1 rounded bg-green-50 hover:bg-green-100"
+                  >
+                    + 添加属性
+                  </button>
+                </div>
               </div>
               
               {formData.attributes && formData.attributes.length > 0 ? (
-                <div className="space-y-2">
-                  {formData.attributes.map((attr: Attribute) => (
-                    <div key={attr.id} className="bg-white p-3 rounded border">
-                      <div className="space-y-2">
-                        <div className="flex items-center space-x-2">
-                          <input
-                            type="text"
-                            value={attr.name}
-                            onChange={(e) => {
-                              const updatedAttributes = formData.attributes.map((a: Attribute) =>
-                                a.id === attr.id ? { ...a, name: e.target.value } : a
-                              );
-                              handleFieldChange('attributes', updatedAttributes);
-                            }}
-                            className="flex-1 text-xs font-medium border border-gray-300 rounded px-2 py-1"
-                            placeholder="属性名称"
-                          />
-                          <select
-                            value={attr.type}
-                            onChange={(e) => {
-                              const updatedAttributes = formData.attributes.map((a: Attribute) =>
-                                a.id === attr.id ? { ...a, type: e.target.value as AttributeType } : a
-                              );
-                              handleFieldChange('attributes', updatedAttributes);
-                            }}
-                            className="text-xs border border-gray-300 rounded px-2 py-1"
-                          >
-                            <option value={AttributeType.TEXT}>文本</option>
-                            <option value={AttributeType.NUMBER}>数字</option>
-                            <option value={AttributeType.ENUM}>枚举</option>
-                          </select>
-                          <button
-                            onClick={() => {
-                              const updatedAttributes = formData.attributes.filter((a: Attribute) => a.id !== attr.id);
-                              handleFieldChange('attributes', updatedAttributes);
-                            }}
-                            className="text-xs text-red-600 hover:text-red-800 px-1"
-                            title="删除属性"
-                          >
-                            ×
-                          </button>
-                        </div>
-                        <input
-                          type="text"
-                          value={String(attr.value)}
-                          onChange={(e) => {
-                            const updatedAttributes = formData.attributes.map((a: Attribute) =>
-                              a.id === attr.id ? { ...a, value: e.target.value } : a
-                            );
-                            handleFieldChange('attributes', updatedAttributes);
-                          }}
-                          className="w-full text-sm border border-gray-300 rounded px-2 py-1"
-                          placeholder="属性值"
-                        />
-                      </div>
-                    </div>
-                  ))}
-                </div>
+                               <div className="space-y-4">
+                 {formData.attributes
+                   .sort((a: Attribute, b: Attribute) => (a.sortOrder || 0) - (b.sortOrder || 0))
+                   .map((attr: Attribute) => (
+                   <div key={attr.id} className="bg-gray-50 p-3 rounded border">
+                     <div className="flex items-start justify-between mb-2">
+                       <div className="flex-1 min-w-0">
+                         <h6 className="text-sm font-medium text-gray-700 truncate">
+                           {attr.name}
+                         </h6>
+                         {attr.description && (
+                           <p className="text-xs text-gray-500 mt-1">
+                             {attr.description}
+                           </p>
+                         )}
+                       </div>
+                       <button
+                         onClick={() => handleRemoveAttribute(attr.id)}
+                         className="ml-2 text-red-500 hover:text-red-700 text-lg leading-none flex-shrink-0"
+                         title="删除属性"
+                       >
+                         ×
+                       </button>
+                     </div>
+                     <div className="mt-2">
+                       <AttributeEditor
+                         attribute={attr}
+                         value={attr.value}
+                         onChange={(value) => handleAttributeChange(attr.id, value)}
+                         onConfigChange={(config) => handleAttributeConfigChange(attr.id, config)}
+                         showValidation={true}
+                         className="compact"
+                       />
+                     </div>
+                   </div>
+                 ))}
+              </div>
               ) : (
-                <div className="text-sm text-gray-500 bg-gray-50 p-3 rounded border">
-                  点击"+ 添加"按钮添加自定义属性
+                <div className="text-sm text-gray-500 bg-gray-50 p-3 rounded border text-center">
+                  <div className="text-2xl mb-2">📝</div>
+                  <div>暂无自定义属性</div>
+                  <div className="text-xs mt-1">点击"+ 添加属性"或"应用模板"开始</div>
                 </div>
               )}
             </div>
@@ -433,38 +664,90 @@ export const Inspector: React.FC = () => {
   };
 
   // 渲染关系面板
-  const renderRelationshipsPanel = () => (
-    <div className="p-4">
-      <h4 className="text-sm font-medium text-gray-700 mb-3">🔗 关系</h4>
-      <div className="text-sm text-gray-500 bg-gray-50 p-3 rounded border">
-        关系功能正在开发中...
+  const renderRelationshipsPanel = () => {
+    if (!singleItem || !formData) return <div className="p-4 text-sm text-gray-500">无可用数据</div>;
+
+    // 查找关系类型的属性
+    const relationAttributes = formData.attributes?.filter((attr: Attribute) => 
+      attr.type === AttributeType.RELATION
+    ) || [];
+
+    return (
+      <div className="p-4">
+        <h4 className="text-sm font-medium text-gray-700 mb-3">🔗 关系</h4>
+        <div className="space-y-3">
+          {relationAttributes.length > 0 ? (
+                          relationAttributes.map((attr: Attribute) => (
+                <AttributeEditor
+                  key={attr.id}
+                  attribute={attr}
+                  value={attr.value}
+                  onChange={(value) => handleAttributeChange(attr.id, value)}
+                  onConfigChange={(config) => handleAttributeConfigChange(attr.id, config)}
+                  showValidation={true}
+                />
+              ))
+          ) : (
+            <div className="text-sm text-gray-500 bg-gray-50 p-3 rounded border text-center">
+              <div className="text-2xl mb-2">🔗</div>
+              <div>暂无关系属性</div>
+              <div className="text-xs mt-1">在属性面板中添加关系类型的属性</div>
+            </div>
+          )}
+        </div>
       </div>
-    </div>
-  );
+    );
+  };
 
   // 渲染依赖面板
   const renderDependenciesPanel = () => (
     <div className="p-4">
       <h4 className="text-sm font-medium text-gray-700 mb-3">⚡ 依赖关系</h4>
-      <div className="text-sm text-gray-500 bg-gray-50 p-3 rounded border">
-        依赖关系功能正在开发中...
+      <div className="text-sm text-gray-500 bg-gray-50 p-3 rounded border text-center">
+        <div className="text-2xl mb-2">⚡</div>
+        <div>依赖关系功能正在开发中</div>
+        <div className="text-xs mt-1">将支持事件和对象间的依赖关系管理</div>
       </div>
     </div>
   );
 
   // 渲染附件面板
-  const renderAttachmentsPanel = () => (
-    <div className="p-4">
-      <h4 className="text-sm font-medium text-gray-700 mb-3">📎 附件</h4>
-      <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center">
-        <div className="text-gray-400 mb-2 text-2xl">📎</div>
-        <div className="text-sm text-gray-500">拖拽文件到此处添加附件</div>
-        <div className="text-xs text-gray-400 mt-1">
-          支持图片、文档等格式
+  const renderAttachmentsPanel = () => {
+    if (!singleItem || !formData) return <div className="p-4 text-sm text-gray-500">无可用数据</div>;
+
+    // 查找文件类型的属性
+    const fileAttributes = formData.attributes?.filter((attr: Attribute) => 
+      attr.type === AttributeType.FILE
+    ) || [];
+
+    return (
+      <div className="p-4">
+        <h4 className="text-sm font-medium text-gray-700 mb-3">📎 附件</h4>
+        <div className="space-y-3">
+          {fileAttributes.length > 0 ? (
+                          fileAttributes.map((attr: Attribute) => (
+                <AttributeEditor
+                  key={attr.id}
+                  attribute={attr}
+                  value={attr.value}
+                  onChange={(value) => handleAttributeChange(attr.id, value)}
+                  onConfigChange={(config) => handleAttributeConfigChange(attr.id, config)}
+                  showValidation={true}
+                />
+              ))
+          ) : (
+            <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center">
+              <div className="text-gray-400 mb-2 text-2xl">📎</div>
+              <div className="text-sm text-gray-500 mb-2">暂无文件附件</div>
+              <div className="text-xs text-gray-400">
+                在属性面板中添加文件类型的属性来管理附件
+              </div>
+            </div>
+          )}
         </div>
       </div>
-    </div>
-  );
+    );
+  };
 
   // 渲染无选择状态
   const renderNoSelection = () => (
@@ -525,13 +808,18 @@ export const Inspector: React.FC = () => {
   ];
 
   return (
-    <div className="h-full flex flex-col bg-white">
+    <div className="h-full flex flex-col bg-white overflow-hidden">
       {/* 检查器标题 */}
-      <div className="h-10 bg-gray-50 border-b border-gray-200 flex items-center px-3">
+      <div className="h-10 bg-gray-50 border-b border-gray-200 flex items-center px-3 flex-shrink-0">
         <h3 className="text-sm font-medium text-gray-700">检查器</h3>
         {hasAnySelection && (
           <span className="ml-2 text-xs text-gray-500">
             ({selectionCount} 项已选)
+          </span>
+        )}
+        {singleItem && availableTemplates.length > 0 && (
+          <span className="ml-2 text-xs text-green-600">
+            • {availableTemplates.length} 个模板可用
           </span>
         )}
       </div>
@@ -543,7 +831,7 @@ export const Inspector: React.FC = () => {
       ) : (
         <>
           {/* 面板切换标签 */}
-          <div className="bg-white border-b border-gray-200">
+          <div className="bg-white border-b border-gray-200 flex-shrink-0">
             <div className="flex overflow-x-auto">
               {panels.map((panel) => (
                 <button
@@ -563,7 +851,13 @@ export const Inspector: React.FC = () => {
           </div>
 
           {/* 面板内容 */}
-          <div className="flex-1 overflow-y-auto bg-gray-50">
+          <div 
+            className="flex-1 bg-gray-50"
+            style={{ 
+              overflowY: 'auto',
+              maxHeight: 'calc(100vh - 120px)'
+            }}
+          >
             {activeInspectorPanel === INSPECTOR_PANELS.DATES && renderDatesPanel()}
             {activeInspectorPanel === INSPECTOR_PANELS.PROPERTIES && renderPropertiesPanel()}
             {activeInspectorPanel === INSPECTOR_PANELS.DEPENDENCIES && renderDependenciesPanel()}

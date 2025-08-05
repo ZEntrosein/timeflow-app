@@ -1,16 +1,90 @@
 /**
  * 属性类型枚举
- * 支持文本、数字、枚举三种基本类型
+ * 支持多种数据类型，参考 Obsidian 的属性系统
  */
 export enum AttributeType {
   TEXT = 'text',
   NUMBER = 'number',
-  ENUM = 'enum'
+  DATE = 'date',
+  BOOLEAN = 'boolean',
+  LIST = 'list',
+  MULTI_SELECT = 'multi-select',
+  RELATION = 'relation',
+  URL = 'url',
+  FILE = 'file',
+  EMAIL = 'email',
+  PHONE = 'phone',
+  COLOR = 'color',
+  RATING = 'rating',
+  PROGRESS = 'progress',
+  CURRENCY = 'currency',
+  DURATION = 'duration',
+  LOCATION = 'location',
+  ENUM = 'enum' // 保持向后兼容
+}
+
+/**
+ * 属性值类型
+ */
+export type AttributeValue = 
+  | string 
+  | number 
+  | boolean 
+  | Date 
+  | string[] 
+  | number[] 
+  | null 
+  | undefined;
+
+/**
+ * 属性验证规则
+ */
+export interface AttributeValidation {
+  /** 是否必填 */
+  required?: boolean;
+  /** 最小值（数字/日期） */
+  min?: number;
+  /** 最大值（数字/日期） */
+  max?: number;
+  /** 最小长度（文本/列表） */
+  minLength?: number;
+  /** 最大长度（文本/列表） */
+  maxLength?: number;
+  /** 正则表达式验证 */
+  pattern?: string;
+  /** 自定义验证函数 */
+  custom?: (value: AttributeValue) => boolean | string;
+}
+
+/**
+ * 属性选项配置
+ */
+export interface AttributeOptions {
+  /** 多选/枚举类型的选项列表 */
+  choices?: string[];
+  /** 是否允许自定义值 */
+  allowCustom?: boolean;
+  /** 默认选中的选项 */
+  defaultSelected?: string[];
+  /** 关系类型的目标对象类型 */
+  relationTarget?: string;
+  /** 数字类型的步长 */
+  step?: number;
+  /** 日期类型的格式 */
+  dateFormat?: string;
+  /** 文件类型的允许扩展名 */
+  allowedExtensions?: string[];
+  /** 评分类型的最大值 */
+  maxRating?: number;
+  /** 进度类型的单位 */
+  progressUnit?: string;
+  /** 货币类型的币种 */
+  currency?: string;
 }
 
 /**
  * 属性接口定义
- * 描述世界对象的各种属性
+ * 描述世界对象的各种属性，支持丰富的数据类型和验证
  */
 export interface Attribute {
   /** 属性唯一标识符 */
@@ -23,19 +97,189 @@ export interface Attribute {
   type: AttributeType;
   
   /** 属性当前值 */
-  value: string | number | null;
+  value: AttributeValue;
   
-  /** 枚举类型的可选值列表 */
-  enumValues?: string[];
+  /** 属性选项配置 */
+  options?: AttributeOptions;
+  
+  /** 属性验证规则 */
+  validation?: AttributeValidation;
   
   /** 属性描述 */
   description?: string;
+  
+  /** 是否在表格视图中显示 */
+  showInTable?: boolean;
+  
+  /** 是否可搜索 */
+  searchable?: boolean;
+  
+  /** 排序权重 */
+  sortOrder?: number;
+  
+  /** 属性分组 */
+  group?: string;
   
   /** 创建时间 */
   createdAt: string;
   
   /** 最后更新时间 */
   updatedAt: string;
+
+  // 保持向后兼容
+  /** @deprecated 使用 options.choices 替代 */
+  enumValues?: string[];
+}
+
+/**
+ * 属性模板接口
+ * 用于快速创建具有预定义属性的对象
+ */
+export interface AttributeTemplate {
+  /** 模板唯一标识符 */
+  id: string;
+  
+  /** 模板名称 */
+  name: string;
+  
+  /** 模板描述 */
+  description?: string;
+  
+  /** 模板图标 */
+  icon?: string;
+  
+  /** 预定义属性列表 */
+  attributes: Omit<Attribute, 'id' | 'value' | 'createdAt' | 'updatedAt'>[];
+  
+  /** 适用对象类型 */
+  appliesTo: ObjectType[] | 'all';
+  
+  /** 是否为系统模板 */
+  isSystem?: boolean;
+  
+  /** 创建时间 */
+  createdAt: string;
+  
+  /** 最后更新时间 */
+  updatedAt: string;
+}
+
+/**
+ * 属性视图配置
+ */
+export interface AttributeViewConfig {
+  /** 视图ID */
+  id: string;
+  
+  /** 视图名称 */
+  name: string;
+  
+  /** 视图类型 */
+  type: 'table' | 'kanban' | 'gallery' | 'chart' | 'timeline';
+  
+  /** 显示的属性列表 */
+  visibleAttributes: string[];
+  
+  /** 分组依据的属性 */
+  groupBy?: string;
+  
+  /** 排序配置 */
+  sortBy?: {
+    attribute: string;
+    order: 'asc' | 'desc';
+  }[];
+  
+  /** 过滤器配置 */
+  filters: AttributeFilter[];
+  
+  /** 视图特定配置 */
+  viewConfig: Record<string, any>;
+  
+  /** 创建时间 */
+  createdAt: string;
+  
+  /** 最后更新时间 */
+  updatedAt: string;
+}
+
+/**
+ * 属性过滤器
+ */
+export interface AttributeFilter {
+  /** 过滤器ID */
+  id: string;
+  
+  /** 属性名称 */
+  attribute: string;
+  
+  /** 操作符 */
+  operator: 'equals' | 'not_equals' | 'contains' | 'not_contains' | 'starts_with' | 'ends_with' | 
+           'greater_than' | 'less_than' | 'greater_equal' | 'less_equal' | 'between' | 
+           'in' | 'not_in' | 'is_empty' | 'is_not_empty' | 'is_true' | 'is_false';
+  
+  /** 过滤值 */
+  value: AttributeValue | AttributeValue[];
+  
+  /** 是否启用 */
+  enabled: boolean;
+}
+
+/**
+ * 属性搜索配置
+ */
+export interface AttributeSearchConfig {
+  /** 搜索查询 */
+  query: string;
+  
+  /** 搜索的属性列表 */
+  searchAttributes: string[];
+  
+  /** 过滤器 */
+  filters: AttributeFilter[];
+  
+  /** 排序配置 */
+  sort: {
+    attribute: string;
+    order: 'asc' | 'desc';
+  }[];
+  
+  /** 分组配置 */
+  groupBy?: string;
+  
+  /** 结果限制 */
+  limit?: number;
+  
+  /** 偏移量 */
+  offset?: number;
+}
+
+/**
+ * 属性统计信息
+ */
+export interface AttributeStats {
+  /** 属性ID */
+  attributeId: string;
+  
+  /** 总数 */
+  total: number;
+  
+  /** 非空值数量 */
+  nonEmpty: number;
+  
+  /** 唯一值数量 */
+  unique: number;
+  
+  /** 最小值（数字/日期） */
+  min?: number | Date;
+  
+  /** 最大值（数字/日期） */
+  max?: number | Date;
+  
+  /** 平均值（数字） */
+  average?: number;
+  
+  /** 值分布 */
+  distribution: Record<string, number>;
 }
 
 /**

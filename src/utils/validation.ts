@@ -4,7 +4,8 @@ import {
   Event, 
   Timeline, 
   ProjectData, 
-  AttributeType 
+  AttributeType,
+  AttributeValue
 } from '../types';
 
 /**
@@ -37,7 +38,7 @@ export function validateTimestamp(timestamp: number): boolean {
  * 验证属性值是否符合属性类型
  */
 export function validateAttributeValue(
-  value: string | number | null, 
+  value: AttributeValue, 
   attribute: Attribute
 ): boolean {
   if (value === null) {

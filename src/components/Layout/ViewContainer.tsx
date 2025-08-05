@@ -1,7 +1,10 @@
 import React from 'react';
-import { useUIStore } from '../../store';
+import { useUIStore, useProjectStore } from '../../store';
 import { VIEW_TYPES } from '../../constants/views';
+import { WorldObject, TimelineEvent } from '../../types';
 import { TimelineView } from '../Views/TimelineView';
+import { AttributeTableView } from '../Views/AttributeViews/AttributeTableView';
+import { searchByAttributes, FilterBuilder } from '../../utils/attributeSearch';
 
 export const ViewContainer: React.FC = () => {
   const { currentView } = useUIStore();
@@ -11,7 +14,7 @@ export const ViewContainer: React.FC = () => {
       case VIEW_TYPES.TIMELINE:
         return <TimelineView />;
       case VIEW_TYPES.DATA_TABLE:
-        return <DataTableView />;
+        return <AttributeTableViewContainer />;
       case VIEW_TYPES.RELATIONSHIP:
         return <RelationshipView />;
       case VIEW_TYPES.SPATIAL:
@@ -30,7 +33,94 @@ export const ViewContainer: React.FC = () => {
   );
 };
 
-// 临时视图组件，展示不同视图的基本结构
+// 属性表格视图容器，提供数据和搜索功能
+const AttributeTableViewContainer: React.FC = () => {
+  const { getObjects, getEvents, updateObject, updateEvent } = useProjectStore();
+  const [searchTerm, setSearchTerm] = React.useState('');
+  const [filters, setFilters] = React.useState<any[]>([]);
+  
+  // 获取所有数据项
+  const objects = getObjects();
+  const events = getEvents();
+  const allData = [...objects, ...events];
+  
+  // 收集所有可用的属性名称
+  const visibleAttributes = React.useMemo(() => {
+    const attributeNames = new Set<string>();
+    allData.forEach(item => {
+      if (item.attributes) {
+        item.attributes.forEach(attr => {
+          attributeNames.add(attr.name);
+        });
+      }
+    });
+    return Array.from(attributeNames);
+  }, [allData]);
+
+  // 应用搜索和过滤
+  const filteredData = React.useMemo(() => {
+    if (!searchTerm && filters.length === 0) {
+      return allData;
+    }
+    
+    return searchByAttributes(allData, {
+      query: searchTerm,
+      searchAttributes: visibleAttributes,
+      filters: filters,
+      sort: [{ attribute: 'name', order: 'asc' }]
+    });
+  }, [allData, searchTerm, filters]);
+
+  // 处理数据更新
+  const handleDataChange = (updatedData: (WorldObject | TimelineEvent)[]) => {
+    updatedData.forEach(item => {
+      if ('startTime' in item) {
+        // 这是一个事件
+        updateEvent(item.id, item as TimelineEvent);
+      } else {
+        // 这是一个对象
+        updateObject(item.id, item as WorldObject);
+      }
+    });
+  };
+
+  return (
+    <div className="h-full bg-white flex flex-col">
+      {/* 搜索和过滤工具栏 */}
+      <div className="p-4 border-b bg-gray-50">
+        <div className="flex gap-4 items-center">
+          <div className="flex-1">
+            <input
+              type="text"
+              placeholder="搜索属性内容..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            />
+          </div>
+          <div className="text-sm text-gray-500">
+            显示 {filteredData.length} / {allData.length} 项
+          </div>
+        </div>
+      </div>
+      
+      {/* 表格视图 */}
+      <div className="flex-1 overflow-hidden">
+        <AttributeTableView 
+          data={filteredData}
+          visibleAttributes={visibleAttributes}
+          editable={true}
+          onDataChange={handleDataChange}
+          onSelectionChange={(selectedIds) => {
+            console.log('选择的项目:', selectedIds);
+          }}
+        />
+      </div>
+    </div>
+  );
+};
+
+// 临时视图组件，展示不同视图的基本结构  
 const DataTableView: React.FC = () => (
   <div className="h-full p-6 flex flex-col items-center justify-center bg-gradient-to-br from-green-50 to-emerald-100">
     <div className="text-6xl mb-4">📋</div>
