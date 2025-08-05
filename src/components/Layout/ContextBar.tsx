@@ -1,16 +1,22 @@
 import React from 'react';
-import { useUIStore } from '../../store';
+import { useUIStore, useProjectStore } from '../../store';
 
 export const ContextBar: React.FC = () => {
   const { viewport, centerOnTime, updateViewport, zoomLevel, getCurrentTheme } = useUIStore();
+  const { getEvents } = useProjectStore();
   const currentTheme = getCurrentTheme();
+  const events = getEvents();
+
+  // 计算概览条显示的总范围（比当前视口大5倍）
+  const overviewRange = viewport.timeRange * 5;
+  const overviewStart = viewport.centerTime - overviewRange / 2;
+  const overviewEnd = viewport.centerTime + overviewRange / 2;
 
   const handleTimelineClick = (event: React.MouseEvent<HTMLDivElement>) => {
     const rect = event.currentTarget.getBoundingClientRect();
     const clickX = event.clientX - rect.left;
     const percentage = clickX / rect.width;
-    const timeRange = viewport.endTime - viewport.startTime;
-    const newCenterTime = viewport.startTime + timeRange * percentage;
+    const newCenterTime = overviewStart + overviewRange * percentage;
     centerOnTime(newCenterTime);
   };
 
@@ -33,12 +39,35 @@ export const ContextBar: React.FC = () => {
             }}
           />
           
+          {/* 零点指示线 */}
+          {overviewStart <= 0 && overviewEnd >= 0 && (
+            <div 
+              className="absolute top-0 bottom-0 w-0.5 bg-gray-600 opacity-60"
+              style={{
+                left: `${((0 - overviewStart) / overviewRange) * 100}%`
+              }}
+              title="时间零点"
+            />
+          )}
+          
+          {/* 负数区域指示 */}
+          {overviewStart < 0 && (
+            <div 
+              className="absolute top-0 bottom-0 bg-red-200 bg-opacity-20"
+              style={{
+                left: '0%',
+                width: `${Math.min(((0 - overviewStart) / overviewRange) * 100, 100)}%`
+              }}
+              title="负数时间区域"
+            />
+          )}
+          
           {/* 当前视口指示器 */}
           <div 
             className="absolute top-0 bottom-0 bg-blue-500 bg-opacity-30 border-2 border-blue-500 rounded-sm"
             style={{
-              left: `${((viewport.startTime - 0) / (1000 - 0)) * 100}%`,
-              width: `${((viewport.endTime - viewport.startTime) / (1000 - 0)) * 100}%`,
+              left: `${((viewport.startTime - overviewStart) / overviewRange) * 100}%`,
+              width: `${(viewport.timeRange / overviewRange) * 100}%`,
             }}
           >
             {/* 左右拖拽手柄 */}
@@ -48,22 +77,25 @@ export const ContextBar: React.FC = () => {
 
           {/* 事件指示器 */}
           <div className="absolute inset-0">
-            {/* 示例事件点 */}
-            <div 
-              className="absolute top-1 bottom-1 w-1 bg-red-500 rounded-full"
-              style={{ left: '20%' }}
-              title="事件 1"
-            />
-            <div 
-              className="absolute top-1 bottom-1 w-1 bg-green-500 rounded-full"
-              style={{ left: '45%' }}
-              title="事件 2"
-            />
-            <div 
-              className="absolute top-1 bottom-1 w-1 bg-blue-500 rounded-full"
-              style={{ left: '75%' }}
-              title="事件 3"
-            />
+            {events.map((event, index) => {
+              const eventTime = event.startTime;
+              // 只显示在概览范围内的事件
+              if (eventTime >= overviewStart && eventTime <= overviewEnd) {
+                const position = ((eventTime - overviewStart) / overviewRange) * 100;
+                const colors = ['bg-red-500', 'bg-green-500', 'bg-blue-500', 'bg-yellow-500', 'bg-purple-500'];
+                const color = colors[index % colors.length];
+                
+                return (
+                  <div 
+                    key={event.id}
+                    className={`absolute top-1 bottom-1 w-1 ${color} rounded-full`}
+                    style={{ left: `${position}%` }}
+                    title={event.title}
+                  />
+                );
+              }
+              return null;
+            })}
           </div>
         </div>
       </div>
@@ -88,11 +120,7 @@ export const ContextBar: React.FC = () => {
       <div className="ml-4 flex items-center space-x-2">
         <button 
           className={`px-2 py-1 text-xs ${currentTheme.background.secondary} hover:${currentTheme.background.primary} ${currentTheme.text.secondary} rounded transition-colors duration-200`}
-          onClick={() => updateViewport({ 
-            startTime: Math.max(0, viewport.startTime - viewport.timeRange * 0.5),
-            endTime: viewport.endTime - viewport.timeRange * 0.5,
-            centerTime: viewport.centerTime - viewport.timeRange * 0.5
-          })}
+          onClick={() => centerOnTime(viewport.centerTime - viewport.timeRange * 0.5)}
           title="向前移动"
         >
           ◀
@@ -106,11 +134,7 @@ export const ContextBar: React.FC = () => {
         </button>
         <button 
           className={`px-2 py-1 text-xs ${currentTheme.background.secondary} hover:${currentTheme.background.primary} ${currentTheme.text.secondary} rounded transition-colors duration-200`}
-          onClick={() => updateViewport({ 
-            startTime: viewport.startTime + viewport.timeRange * 0.5,
-            endTime: Math.min(1000, viewport.endTime + viewport.timeRange * 0.5),
-            centerTime: viewport.centerTime + viewport.timeRange * 0.5
-          })}
+          onClick={() => centerOnTime(viewport.centerTime + viewport.timeRange * 0.5)}
           title="向后移动"
         >
           ▶

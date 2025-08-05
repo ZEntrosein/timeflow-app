@@ -277,18 +277,88 @@ export const useUIStore = create<UIStore>()(
       
       // 缩放和视口控制
       setZoomLevel: (level) => set({ zoomLevel: level }),
-      zoomIn: () => set((state) => ({ 
-        zoomLevel: Math.min(state.zoomLevel * 1.2, 5) 
-      })),
-      zoomOut: () => set((state) => ({ 
-        zoomLevel: Math.max(state.zoomLevel / 1.2, 0.1) 
-      })),
-      updateViewport: (viewport) => set((state) => ({
-        viewport: { ...state.viewport, ...viewport }
-      })),
-      centerOnTime: (time) => set((state) => ({
-        viewport: { ...state.viewport, centerTime: time }
-      })),
+      zoomIn: () => set((state) => {
+        const newZoomLevel = Math.min(state.zoomLevel * 1.2, 5);
+        
+        // 同时更新viewport以实现真正的缩放效果
+        const currentTimeRange = state.viewport.endTime - state.viewport.startTime;
+        const newTimeRange = currentTimeRange / 1.2; // 缩小时间范围来放大视图
+        const centerTime = state.viewport.centerTime || (state.viewport.startTime + state.viewport.endTime) / 2;
+        const newStartTime = centerTime - newTimeRange / 2;
+        const newEndTime = centerTime + newTimeRange / 2;
+        
+        return {
+          zoomLevel: newZoomLevel,
+          viewport: {
+            ...state.viewport,
+            startTime: newStartTime,
+            endTime: newEndTime,
+            centerTime: centerTime,
+            timeRange: newTimeRange,
+          }
+        };
+      }),
+      zoomOut: () => set((state) => {
+        const newZoomLevel = Math.max(state.zoomLevel / 1.2, 0.1);
+        
+        // 同时更新viewport以实现真正的缩放效果
+        const currentTimeRange = state.viewport.endTime - state.viewport.startTime;
+        const newTimeRange = currentTimeRange * 1.2; // 扩大时间范围来缩小视图
+        const centerTime = state.viewport.centerTime || (state.viewport.startTime + state.viewport.endTime) / 2;
+        const newStartTime = centerTime - newTimeRange / 2;
+        const newEndTime = centerTime + newTimeRange / 2;
+        
+        return {
+          zoomLevel: newZoomLevel,
+          viewport: {
+            ...state.viewport,
+            startTime: newStartTime,
+            endTime: newEndTime,
+            centerTime: centerTime,
+            timeRange: newTimeRange,
+          }
+        };
+      }),
+      updateViewport: (viewport) => set((state) => {
+        const newViewport = { ...state.viewport, ...viewport };
+        
+        // 确保 timeRange 和其他字段保持一致
+        if (newViewport.startTime !== undefined && newViewport.endTime !== undefined) {
+          newViewport.timeRange = newViewport.endTime - newViewport.startTime;
+          newViewport.centerTime = (newViewport.startTime + newViewport.endTime) / 2;
+        } else if (newViewport.centerTime !== undefined && newViewport.timeRange !== undefined) {
+          newViewport.startTime = newViewport.centerTime - newViewport.timeRange / 2;
+          newViewport.endTime = newViewport.centerTime + newViewport.timeRange / 2;
+        }
+        
+        // 调试信息（开发环境）
+        if (process.env.NODE_ENV === 'development') {
+          console.log('Viewport updated:', {
+            startTime: newViewport.startTime,
+            endTime: newViewport.endTime,
+            centerTime: newViewport.centerTime,
+            timeRange: newViewport.timeRange,
+            calculated: {
+              timeRange: newViewport.endTime - newViewport.startTime,
+              centerTime: (newViewport.startTime + newViewport.endTime) / 2
+            }
+          });
+        }
+        
+        return { viewport: newViewport };
+      }),
+      centerOnTime: (time) => set((state) => {
+        const halfRange = state.viewport.timeRange / 2;
+        
+        return {
+          viewport: {
+            ...state.viewport,
+            centerTime: time,
+            startTime: time - halfRange,
+            endTime: time + halfRange
+          }
+        };
+      }),
       resetTimelineView: (events) => {
         if (events && events.length > 0) {
           const allStartTimes = events.map(e => e.startTime);

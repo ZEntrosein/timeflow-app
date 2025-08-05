@@ -97,21 +97,21 @@ export const Toolbar: React.FC = () => {
         <div className="w-px h-8 theme-border-secondary opacity-50" />
 
         {/* 缩放控制 */}
-        <div className="flex items-center space-x-3 bg-gray-50 dark:bg-gray-700 rounded-lg px-3 py-1 shadow-sm">
+        <div className="flex items-center space-x-3 theme-bg-secondary rounded-lg px-3 py-1 shadow-sm border theme-border-secondary">
           <button
             onClick={zoomOut}
             className="w-8 h-8 text-sm theme-bg-secondary hover:theme-bg-primary rounded-md transition-all duration-200 theme-text-secondary shadow-sm hover:shadow-md transform hover:scale-110 font-bold flex items-center justify-center"
-            title="缩小"
+            title="缩小时间轴 (显示更大时间范围)"
           >
             −
           </button>
-          <span className="text-sm theme-text-tertiary min-w-16 text-center font-mono font-medium">
+          <span className="text-sm theme-text-tertiary min-w-16 text-center font-mono font-medium" title="当前缩放级别">
             {Math.round(zoomLevel * 100)}%
           </span>
           <button
             onClick={zoomIn}
             className="w-8 h-8 text-sm theme-bg-secondary hover:theme-bg-primary rounded-md transition-all duration-200 theme-text-secondary shadow-sm hover:shadow-md transform hover:scale-110 font-bold flex items-center justify-center"
-            title="放大"
+            title="放大时间轴 (显示更小时间范围)"
           >
             +
           </button>

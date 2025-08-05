@@ -435,6 +435,11 @@ export const TimelineCanvas: React.FC<TimelineCanvasProps> = ({ width, height })
   const handleWheel = (e: any) => {
     e.evt.preventDefault();
     
+    // 检查是否按下Ctrl键，只有Ctrl+滚轮才进行缩放
+    if (!e.evt.ctrlKey) {
+      return; // 普通滚轮不进行缩放，让用户可以正常滚动页面
+    }
+    
     const scaleBy = 1.1;
     const scale = e.evt.deltaY < 0 ? scaleBy : 1 / scaleBy;
     
@@ -458,12 +463,19 @@ export const TimelineCanvas: React.FC<TimelineCanvasProps> = ({ width, height })
     const newStartTime = mouseTime - (mouseTime - viewport.startTime) * (newTimeRange / timeRange);
     const newEndTime = newStartTime + newTimeRange;
     
+    // 更新viewport和zoomLevel
+    const baseTimeRange = 100; // 基准时间范围，可以根据项目调整
+    const newZoomLevel = baseTimeRange / newTimeRange;
+    
     updateViewport({
       startTime: newStartTime,
       endTime: newEndTime,
       centerTime: (newStartTime + newEndTime) / 2,
       timeRange: newTimeRange,
     });
+    
+    // 同步更新zoomLevel以保持一致性
+    useUIStore.getState().setZoomLevel(Math.max(0.1, Math.min(5, newZoomLevel)));
   };
 
   const timeScales = generateTimeScales();
