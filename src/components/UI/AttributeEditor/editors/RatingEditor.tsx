@@ -31,14 +31,14 @@ export const RatingEditor: React.FC<RatingEditorProps> = (props) => {
             onClick={() => handleStarClick(starValue)}
             disabled={props.disabled}
             className={`text-2xl ${
-              starValue <= currentRating ? 'text-yellow-400' : 'text-gray-300'
+              starValue <= currentRating ? 'text-yellow-400' : 'theme-text-tertiary'
             } hover:text-yellow-400 disabled:cursor-not-allowed`}
           >
             ★
           </button>
         );
       })}
-      <span className="ml-2 text-sm text-gray-600">
+      <span className="ml-2 text-sm theme-text-secondary">
         {currentRating}/{maxRating}
       </span>
     </div>

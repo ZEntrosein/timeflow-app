@@ -86,7 +86,7 @@ export const ListEditor: React.FC<ListEditorProps> = ({
             type="button"
             onClick={handleAddItem}
             disabled={!newItem.trim()}
-            className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:bg-gray-300 disabled:cursor-not-allowed"
+            className="px-4 py-2 theme-btn-primary rounded-md"
           >
             添加
           </button>
@@ -95,7 +95,7 @@ export const ListEditor: React.FC<ListEditorProps> = ({
 
       {/* 空状态提示 */}
       {listValues.length === 0 && (
-        <div className="text-sm text-gray-500 text-center py-4 border-2 border-dashed border-gray-300 rounded-md">
+        <div className="text-sm theme-text-tertiary text-center py-4 border-2 border-dashed theme-border-secondary rounded-md">
           暂无项目
         </div>
       )}

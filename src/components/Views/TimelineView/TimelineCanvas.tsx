@@ -469,7 +469,7 @@ export const TimelineCanvas: React.FC<TimelineCanvasProps> = ({ width, height })
   const timeScales = generateTimeScales();
 
   return (
-    <div className="w-full h-full bg-white">
+    <div className={`w-full h-full ${currentTheme.background.canvas.startsWith('#') ? '' : currentTheme.background.canvas}`} style={currentTheme.background.canvas.startsWith('#') ? { backgroundColor: currentTheme.background.canvas } : {}}>
       <Stage
         ref={stageRef}
         width={width}

@@ -7,6 +7,7 @@ import { Inspector } from './Inspector';
 import { ContextBar } from './ContextBar';
 import { ViewContainer } from './ViewContainer';
 import { AddObjectDialog } from '../Dialogs/AddObjectDialog';
+import { ToastContainer } from '../UI/Toast';
 
 interface MainLayoutProps {
   children?: React.ReactNode;
@@ -26,7 +27,7 @@ export const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
   const currentTheme = getCurrentTheme();
 
   return (
-    <div className={`flex flex-col h-screen ${currentTheme.background.primary} overflow-hidden`}>
+    <div className="flex flex-col h-screen theme-bg-primary overflow-hidden">
       {/* 工具栏 */}
       <Toolbar />
       
@@ -35,7 +36,7 @@ export const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
         {/* 侧边栏 */}
         {sidebarVisible && (
           <div 
-            className={`${currentTheme.ui.panel} ${currentTheme.border.primary} border-r flex-shrink-0`}
+            className="theme-panel theme-border-primary border-r flex-shrink-0"
             style={{ width: layoutConfig.sidebarWidth }}
           >
             <Sidebar />
@@ -45,14 +46,14 @@ export const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
         {/* 主视图区域 */}
         <div className="flex flex-col flex-1 min-w-0">
           {/* 视图容器 */}
-          <div className={`flex-1 ${currentTheme.ui.panel}`}>
+          <div className="flex-1 theme-panel">
             <ViewContainer />
             {children}
           </div>
           
           {/* 上下文导航栏 */}
           <div 
-            className={`${currentTheme.ui.contextBar} ${currentTheme.border.primary} border-t`}
+            className="theme-contextbar theme-border-primary border-t"
             style={{ height: layoutConfig.contextBarHeight }}
           >
             <ContextBar />
@@ -62,7 +63,7 @@ export const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
         {/* 检查器面板 */}
         {inspectorVisible && (
           <div 
-            className={`${currentTheme.ui.panel} ${currentTheme.border.primary} border-l flex-shrink-0 h-full`}
+            className="theme-panel theme-border-primary border-l flex-shrink-0 h-full"
             style={{ width: layoutConfig.inspectorWidth }}
           >
             <Inspector />
@@ -75,6 +76,9 @@ export const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
         isOpen={dialogs.addObject} 
         onClose={closeAddObjectDialog} 
       />
+
+      {/* Toast 通知容器 */}
+      <ToastContainer />
     </div>
   );
 }; 

@@ -141,6 +141,7 @@ export const EventManager: React.FC<EventManagerProps> = ({
             onChange={(e) => setFormData(prev => ({ ...prev, newValue: e.target.value }))}
             placeholder="输入文本值"
             required
+            className="w-full px-3 py-2 border theme-input rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
           />
         );
       
@@ -153,6 +154,7 @@ export const EventManager: React.FC<EventManagerProps> = ({
             placeholder="输入数字值"
             step="any"
             required
+            className="w-full px-3 py-2 border theme-input rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
           />
         );
       
@@ -162,7 +164,7 @@ export const EventManager: React.FC<EventManagerProps> = ({
             value={formData.newValue}
             onChange={(e) => setFormData(prev => ({ ...prev, newValue: e.target.value }))}
             required
-            className="w-full px-3 py-2 border border-gray-300 rounded-md bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            className="w-full px-3 py-2 border theme-input rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
           >
             <option value="">选择枚举值</option>
             {selectedAttribute.enumValues?.map(value => (
@@ -199,7 +201,7 @@ export const EventManager: React.FC<EventManagerProps> = ({
               value={selectedObject?.id || ''}
               onChange={(e) => handleObjectSelect(e.target.value)}
               required
-              className="w-full px-3 py-2 border border-gray-300 rounded-md bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="w-full px-3 py-2 border theme-input rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             >
               <option value="">请选择对象</option>
               {objects.map(obj => (
@@ -215,7 +217,7 @@ export const EventManager: React.FC<EventManagerProps> = ({
                 value={selectedAttribute?.id || ''}
                 onChange={(e) => handleAttributeSelect(e.target.value)}
                 required
-                className="w-full px-3 py-2 border border-gray-300 rounded-md bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full px-3 py-2 border theme-input rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               >
                 <option value="">请选择属性</option>
                 {selectedObject.attributes.map(attr => (
@@ -234,6 +236,7 @@ export const EventManager: React.FC<EventManagerProps> = ({
               value={formData.timestamp}
               onChange={(e) => setFormData(prev => ({ ...prev, timestamp: e.target.value }))}
               required
+              className="w-full px-3 py-2 border theme-input rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             />
           </div>
 
@@ -251,6 +254,7 @@ export const EventManager: React.FC<EventManagerProps> = ({
               onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
               placeholder="描述这个事件的内容..."
               rows={3}
+              className="w-full px-3 py-2 border theme-input rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             />
           </div>
 

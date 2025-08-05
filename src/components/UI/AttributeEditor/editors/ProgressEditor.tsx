@@ -30,7 +30,7 @@ export const ProgressEditor: React.FC<ProgressEditorProps> = (props) => {
           onBlur={props.onBlur}
           className="flex-1"
         />
-        <span className="text-sm text-gray-600 min-w-[3rem]">
+        <span className="text-sm theme-text-secondary min-w-[3rem]">
           {progressValue}{unit}
         </span>
       </div>

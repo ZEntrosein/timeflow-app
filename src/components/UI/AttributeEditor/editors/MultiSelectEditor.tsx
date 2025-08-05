@@ -61,14 +61,14 @@ export const MultiSelectEditor: React.FC<MultiSelectEditorProps> = ({
         {selectedValues.map((val, index) => (
           <span
             key={index}
-            className="inline-flex items-center px-2 py-1 text-xs bg-blue-100 text-blue-800 rounded-full"
+            className="inline-flex items-center px-2 py-1 text-xs bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 rounded-full"
           >
             {String(val)}
             {!disabled && (
               <button
                 type="button"
                 onClick={() => handleRemoveValue(String(val))}
-                className="ml-1 text-blue-600 hover:text-blue-800"
+                className="ml-1 text-blue-600 dark:text-blue-300 hover:text-blue-800 dark:hover:text-blue-100"
               >
                 ×
               </button>
@@ -85,15 +85,14 @@ export const MultiSelectEditor: React.FC<MultiSelectEditorProps> = ({
           onFocus={onFocus}
           onBlur={onBlur}
           disabled={disabled}
-          className="w-full px-3 py-2 text-left border border-gray-300 rounded-md bg-white text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:bg-gray-100 disabled:cursor-not-allowed disabled:text-gray-500"
-          style={{color: '#111827', backgroundColor: 'white'}}
+          className="w-full px-3 py-2 text-left border theme-input rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:opacity-50 disabled:cursor-not-allowed"
         >
           {selectedValues.length > 0 
             ? `已选择 ${selectedValues.length} 项` 
             : placeholder
           }
           <span className="absolute inset-y-0 right-0 flex items-center pr-2 pointer-events-none">
-            <svg className="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg className="w-4 h-4 theme-text-tertiary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
             </svg>
           </span>
@@ -101,23 +100,30 @@ export const MultiSelectEditor: React.FC<MultiSelectEditorProps> = ({
 
         {/* 下拉选项 */}
         {isOpen && !disabled && (
-          <div className="absolute z-50 w-full mt-1 bg-white border border-gray-300 rounded-md shadow-lg max-h-60 overflow-auto" style={{backgroundColor: 'white'}}>
+          <div 
+            className="absolute z-50 w-full mt-1 theme-bg-secondary theme-border-primary border rounded-md shadow-lg max-h-60 overflow-auto"
+            style={{
+              backgroundColor: 'var(--input-bg)',
+              borderColor: 'var(--input-border)'
+            }}
+          >
             {/* 搜索框 */}
-            <div className="p-2 border-b bg-white">
+            <div 
+              className="p-2 theme-border-secondary border-b"
+              style={{ backgroundColor: 'var(--input-bg)' }}
+            >
               <input
                 type="text"
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 placeholder="搜索或添加新选项..."
-                className="w-full px-2 py-1 text-sm border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500 bg-white text-gray-900 placeholder-gray-500"
-                style={{color: '#111827', backgroundColor: 'white'}}
+                className="w-full px-2 py-1 text-sm border theme-input rounded focus:outline-none focus:ring-1 focus:ring-blue-500"
               />
               {allowCustom && searchTerm && !options.includes(searchTerm) && (
                 <button
                   type="button"
                   onClick={handleAddCustom}
-                  className="mt-1 text-xs text-blue-600 hover:text-blue-800 bg-white"
-                  style={{color: '#2563eb', backgroundColor: 'white'}}
+                  className="mt-1 text-xs text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-200"
                 >
                   添加 "{searchTerm}"
                 </button>
@@ -125,23 +131,29 @@ export const MultiSelectEditor: React.FC<MultiSelectEditorProps> = ({
             </div>
 
             {/* 选项列表 */}
-            <div className="max-h-40 overflow-auto bg-white">
+            <div 
+              className="max-h-40 overflow-auto"
+              style={{ backgroundColor: 'var(--input-bg)' }}
+            >
               {filteredOptions.map((option, index) => (
                 <label
                   key={index}
-                  className="flex items-center px-3 py-2 bg-white hover:bg-gray-50 cursor-pointer"
+                  className="flex items-center px-3 py-2 hover:theme-bg-primary cursor-pointer transition-colors duration-150"
                 >
                   <input
                     type="checkbox"
                     checked={selectedValues.includes(option)}
                     onChange={() => handleToggleOption(option)}
-                    className="mr-2 text-blue-600 focus:ring-blue-500"
+                    className="mr-2 text-blue-600 focus:ring-blue-500 theme-bg-secondary"
                   />
-                  <span className="text-sm text-gray-900" style={{color: '#111827'}}>{option}</span>
+                  <span className="text-sm theme-text-primary">{option}</span>
                 </label>
               ))}
               {filteredOptions.length === 0 && (
-                <div className="px-3 py-2 text-sm text-gray-500 bg-white" style={{color: '#6b7280', backgroundColor: 'white'}}>
+                <div 
+                  className="px-3 py-2 text-sm theme-text-tertiary"
+                  style={{ backgroundColor: 'var(--input-bg)' }}
+                >
                   没有找到匹配的选项
                 </div>
               )}

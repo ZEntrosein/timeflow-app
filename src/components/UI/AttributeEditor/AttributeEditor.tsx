@@ -60,7 +60,7 @@ const SimpleEditor: React.FC<{
           disabled={disabled}
           className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500"
         />
-        <span className="ml-2 text-sm text-gray-700">
+        <span className="ml-2 text-sm theme-text-secondary">
           {value ? '是' : '否'}
         </span>
       </div>
@@ -153,7 +153,7 @@ const SimpleEditor: React.FC<{
                 disabled={disabled}
                 className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500"
               />
-              <span className="text-sm text-gray-700">{option}</span>
+              <span className="text-sm theme-text-secondary">{option}</span>
             </label>
           ))}
         </div>
@@ -228,7 +228,7 @@ const SimpleEditor: React.FC<{
         <div className="space-y-1">
           {currentItems.map((item, index) => (
             <div key={index} className="flex items-center space-x-2 p-2 bg-gray-50 rounded border">
-              <span className="flex-1 text-sm text-gray-700">{item}</span>
+              <span className="flex-1 text-sm theme-text-secondary">{item}</span>
               {!disabled && (
                 <div className="flex space-x-1">
                   <button
@@ -286,14 +286,14 @@ const SimpleEditor: React.FC<{
                 }
               }}
             />
-            <div className="text-xs text-gray-500 mt-1">
+            <div className="text-xs theme-text-tertiary mt-1">
               每行一个项目，按 Enter 键添加，Shift+Enter 换行
             </div>
           </div>
         )}
         
         {currentItems.length === 0 && (
-          <div className="text-xs text-gray-400 text-center py-4 border border-dashed border-gray-300 rounded">
+          <div className="text-xs theme-text-tertiary text-center py-4 border border-dashed theme-border-secondary rounded">
             暂无项目
           </div>
         )}
@@ -509,7 +509,7 @@ export const AttributeEditor: React.FC<AttributeEditorProps> = ({
         <div className="flex items-center justify-between mb-2">
           <label 
             className={`block text-sm font-medium ${
-              validationError ? 'text-red-600' : 'text-gray-700'
+              validationError ? 'text-red-600 dark:text-red-400' : 'theme-text-secondary'
             }`}
           >
             {attribute.name}
@@ -519,7 +519,7 @@ export const AttributeEditor: React.FC<AttributeEditorProps> = ({
           </label>
           
           {/* 属性类型指示器 */}
-          <span className="text-xs text-gray-400 bg-gray-100 px-2 py-1 rounded">
+          <span className="text-xs theme-text-tertiary theme-bg-secondary px-2 py-1 rounded">
             {attribute.type}
           </span>
         </div>
@@ -527,7 +527,7 @@ export const AttributeEditor: React.FC<AttributeEditorProps> = ({
 
       {/* 属性描述 - 紧凑模式下隐藏，因为父组件已经显示 */}
       {!isCompact && attribute.description && (
-        <p className="text-sm text-gray-500 mb-2">
+        <p className="text-sm theme-text-tertiary mb-2">
           {attribute.description}
         </p>
       )}
@@ -535,7 +535,7 @@ export const AttributeEditor: React.FC<AttributeEditorProps> = ({
       {/* 紧凑模式下显示类型指示器 */}
       {isCompact && (
         <div className="flex items-center justify-between mb-2">
-          <span className="text-xs text-gray-500">
+          <span className="text-xs theme-text-tertiary">
             {attribute.validation?.required && (
               <span className="text-red-500 mr-1">*</span>
             )}
@@ -559,7 +559,7 @@ export const AttributeEditor: React.FC<AttributeEditorProps> = ({
 
       {/* 帮助文本 - 紧凑模式下简化显示 */}
       {!validationError && attribute.validation && (
-        <div className={`mt-1 text-xs text-gray-400 ${isCompact ? 'text-xs' : ''}`}>
+        <div className={`mt-1 text-xs theme-text-tertiary ${isCompact ? 'text-xs' : ''}`}>
           {attribute.validation.required && '必填项'}
           {!isCompact && attribute.validation.minLength && ` • 最少${attribute.validation.minLength}字符`}
           {!isCompact && attribute.validation.maxLength && ` • 最多${attribute.validation.maxLength}字符`}

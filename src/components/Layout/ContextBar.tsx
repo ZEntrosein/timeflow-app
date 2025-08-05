@@ -2,7 +2,8 @@ import React from 'react';
 import { useUIStore } from '../../store';
 
 export const ContextBar: React.FC = () => {
-  const { viewport, centerOnTime, updateViewport, zoomLevel } = useUIStore();
+  const { viewport, centerOnTime, updateViewport, zoomLevel, getCurrentTheme } = useUIStore();
+  const currentTheme = getCurrentTheme();
 
   const handleTimelineClick = (event: React.MouseEvent<HTMLDivElement>) => {
     const rect = event.currentTarget.getBoundingClientRect();
@@ -14,16 +15,23 @@ export const ContextBar: React.FC = () => {
   };
 
   return (
-    <div className="h-full bg-gray-100 border-t border-gray-200 flex items-center px-4">
+    <div className={`h-full ${currentTheme.ui.contextBar} ${currentTheme.border.primary} border-t flex items-center px-4`}>
       {/* 时间轴概览 */}
-      <div className="flex-1 h-6 bg-white border border-gray-300 rounded relative overflow-hidden cursor-pointer">
+      <div className={`flex-1 h-6 ${currentTheme.background.secondary} ${currentTheme.border.secondary} border rounded relative overflow-hidden cursor-pointer`}>
         <div 
-          className="h-full bg-gray-200 relative"
+          className={`h-full ${currentTheme.background.primary} relative`}
           onClick={handleTimelineClick}
           title="点击跳转到指定时间"
         >
           {/* 时间轴背景网格 */}
-          <div className="absolute inset-0 bg-gradient-to-r from-gray-100 to-gray-200" />
+          <div 
+            className="absolute inset-0"
+            style={{
+              background: currentTheme.name === 'dark' 
+                ? 'linear-gradient(to right, #374151, #4b5563)' 
+                : 'linear-gradient(to right, #f3f4f6, #e5e7eb)'
+            }}
+          />
           
           {/* 当前视口指示器 */}
           <div 
@@ -61,7 +69,7 @@ export const ContextBar: React.FC = () => {
       </div>
 
       {/* 时间信息 */}
-      <div className="ml-4 flex items-center space-x-4 text-xs text-gray-600">
+      <div className={`ml-4 flex items-center space-x-4 text-xs ${currentTheme.text.tertiary}`}>
         <div className="flex items-center space-x-2">
           <span>开始:</span>
           <span className="font-mono">{Math.round(viewport.startTime)}</span>
@@ -79,7 +87,7 @@ export const ContextBar: React.FC = () => {
       {/* 导航控制 */}
       <div className="ml-4 flex items-center space-x-2">
         <button 
-          className="px-2 py-1 text-xs bg-gray-200 hover:bg-gray-300 rounded"
+          className={`px-2 py-1 text-xs ${currentTheme.background.secondary} hover:${currentTheme.background.primary} ${currentTheme.text.secondary} rounded transition-colors duration-200`}
           onClick={() => updateViewport({ 
             startTime: Math.max(0, viewport.startTime - viewport.timeRange * 0.5),
             endTime: viewport.endTime - viewport.timeRange * 0.5,
@@ -90,14 +98,14 @@ export const ContextBar: React.FC = () => {
           ◀
         </button>
         <button 
-          className="px-2 py-1 text-xs bg-gray-200 hover:bg-gray-300 rounded"
+          className={`px-2 py-1 text-xs ${currentTheme.background.secondary} hover:${currentTheme.background.primary} ${currentTheme.text.secondary} rounded transition-colors duration-200`}
           onClick={() => centerOnTime(500)}
           title="回到中心"
         >
           ⚫
         </button>
         <button 
-          className="px-2 py-1 text-xs bg-gray-200 hover:bg-gray-300 rounded"
+          className={`px-2 py-1 text-xs ${currentTheme.background.secondary} hover:${currentTheme.background.primary} ${currentTheme.text.secondary} rounded transition-colors duration-200`}
           onClick={() => updateViewport({ 
             startTime: viewport.startTime + viewport.timeRange * 0.5,
             endTime: Math.min(1000, viewport.endTime + viewport.timeRange * 0.5),

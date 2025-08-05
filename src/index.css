@@ -2,55 +2,445 @@
 @tailwind components;
 @tailwind utilities;
 
-/* 自定义全局样式 */
+/* 主题CSS变量 */
 :root {
-  font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
-  line-height: 1.5;
-  font-weight: 400;
+  /* 明亮主题 */
+  --bg-primary: #f3f4f6;
+  --bg-secondary: #ffffff;
+  --bg-canvas: #f9fafb;
+  --text-primary: #111827;
+  --text-secondary: #374151;
+  --text-tertiary: #6b7280;
+  --border-primary: #d1d5db;
+  --border-secondary: #e5e7eb;
+  --panel-bg: #f9fafb;
+  --toolbar-bg: #ffffff;
+  --contextbar-bg: #ffffff;
+  
+  /* 表单元素 */
+  --input-bg: #ffffff;
+  --input-border: #d1d5db;
+  --input-text: #111827;
+  --input-placeholder: #9ca3af;
+  --input-focus-border: #3b82f6;
+  --input-focus-ring: rgba(59, 130, 246, 0.1);
+  
+  /* 错误状态 */
+  --error-bg: #fef2f2;
+  --error-border: #fca5a5;
+  --error-text: #dc2626;
+  
+  /* 选择框 */
+  --select-bg: #ffffff;
+  --select-border: #d1d5db;
+  --select-text: #111827;
+  --select-arrow: #6b7280;
+}
 
-  color-scheme: light dark;
-  color: rgba(255, 255, 255, 0.87);
-  background-color: #242424;
+/* 深色主题 */
+:root.dark {
+  --bg-primary: #111827;
+  --bg-secondary: #1f2937;
+  --bg-canvas: #1f2937;
+  --text-primary: #f9fafb;
+  --text-secondary: #d1d5db;
+  --text-tertiary: #9ca3af;
+  --border-primary: #4b5563;
+  --border-secondary: #374151;
+  --panel-bg: #1f2937;
+  --toolbar-bg: #111827;
+  --contextbar-bg: #111827;
+  
+  /* 表单元素 - 深色主题 */
+  --input-bg: #374151;
+  --input-border: #4b5563;
+  --input-text: #f9fafb;
+  --input-placeholder: #9ca3af;
+  --input-focus-border: #60a5fa;
+  --input-focus-ring: rgba(96, 165, 250, 0.1);
+  
+  /* 错误状态 - 深色主题 */
+  --error-bg: #1f2937;
+  --error-border: #f87171;
+  --error-text: #f87171;
+  
+  /* 选择框 - 深色主题 */
+  --select-bg: #374151;
+  --select-border: #4b5563;
+  --select-text: #f9fafb;
+  --select-arrow: #9ca3af;
+}
 
-  font-synthesis: none;
-  text-rendering: optimizeLegibility;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  -webkit-text-size-adjust: 100%;
+/* 全局样式 */
+html {
+  transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 body {
   margin: 0;
-  display: flex;
-  min-width: 320px;
-  min-height: 100vh;
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+  transition: background-color 0.3s ease, color 0.3s ease;
+  font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
+  line-height: 1.5;
+  font-weight: 400;
 }
 
-#root {
-  width: 100%;
-  height: 100vh;
+/* 主题相关的通用类 */
+.theme-bg-primary {
+  background-color: var(--bg-primary) !important;
 }
 
-/* 重置一些默认样式 */
+.theme-bg-secondary {
+  background-color: var(--bg-secondary) !important;
+}
+
+.theme-bg-canvas {
+  background-color: var(--bg-canvas) !important;
+}
+
+.theme-text-primary {
+  color: var(--text-primary) !important;
+}
+
+.theme-text-secondary {
+  color: var(--text-secondary) !important;
+}
+
+.theme-text-tertiary {
+  color: var(--text-tertiary) !important;
+}
+
+.theme-border-primary {
+  border-color: var(--border-primary) !important;
+}
+
+.theme-border-secondary {
+  border-color: var(--border-secondary) !important;
+}
+
+.theme-panel {
+  background-color: var(--panel-bg) !important;
+}
+
+.theme-toolbar {
+  background-color: var(--toolbar-bg) !important;
+}
+
+.theme-contextbar {
+  background-color: var(--contextbar-bg) !important;
+}
+
+/* 表单元素主题类 */
+.theme-input {
+  background-color: var(--input-bg) !important;
+  border-color: var(--input-border) !important;
+  color: var(--input-text) !important;
+}
+
+.theme-input::placeholder {
+  color: var(--input-placeholder) !important;
+}
+
+.theme-input:focus {
+  border-color: var(--input-focus-border) !important;
+  box-shadow: 0 0 0 3px var(--input-focus-ring) !important;
+}
+
+.theme-select {
+  background-color: var(--select-bg) !important;
+  border-color: var(--select-border) !important;
+  color: var(--select-text) !important;
+}
+
+.theme-label {
+  color: var(--text-tertiary) !important;
+}
+
+/* 错误状态 */
+.theme-input-error {
+  background-color: var(--error-bg) !important;
+  border-color: var(--error-border) !important;
+}
+
+.theme-error-text {
+  color: var(--error-text) !important;
+}
+
+/* 悬停状态 */
+.hover\:theme-bg-primary:hover {
+  background-color: var(--bg-primary) !important;
+}
+
+.hover\:theme-bg-secondary:hover {
+  background-color: var(--bg-secondary) !important;
+}
+
+/* 简化的全局表单元素样式 - 使用更强的选择器 */
+input, 
+textarea, 
+select,
+input[type="text"],
+input[type="number"],
+input[type="email"],
+input[type="password"],
+input[type="search"],
+input[type="tel"],
+input[type="url"],
+input[type="date"],
+input[type="datetime-local"],
+input[type="month"],
+input[type="time"],
+input[type="week"],
+input[type="color"] {
+  background-color: var(--input-bg) !important;
+  border-color: var(--input-border) !important;
+  color: var(--input-text) !important;
+  transition: all 0.2s ease !important;
+}
+
+input:focus, 
+textarea:focus, 
+select:focus,
+input[type="text"]:focus,
+input[type="number"]:focus,
+input[type="email"]:focus,
+input[type="password"]:focus,
+input[type="search"]:focus,
+input[type="tel"]:focus,
+input[type="url"]:focus,
+input[type="date"]:focus,
+input[type="datetime-local"]:focus,
+input[type="month"]:focus,
+input[type="time"]:focus,
+input[type="week"]:focus,
+input[type="color"]:focus {
+  border-color: var(--input-focus-border) !important;
+  box-shadow: 0 0 0 3px var(--input-focus-ring) !important;
+  outline: none !important;
+}
+
+input:disabled,
+textarea:disabled,
+select:disabled {
+  background-color: var(--bg-secondary) !important;
+  opacity: 0.6 !important;
+  cursor: not-allowed !important;
+}
+
+input::placeholder,
+textarea::placeholder {
+  color: var(--input-placeholder) !important;
+}
+
+/* 复选框特殊处理 */
+input[type="checkbox"],
+input[type="radio"] {
+  background-color: var(--input-bg) !important;
+  border-color: var(--input-border) !important;
+}
+
+input[type="checkbox"]:checked,
+input[type="radio"]:checked {
+  background-color: #3b82f6 !important;
+  border-color: #3b82f6 !important;
+}
+
+/* 按钮主题类 */
+.theme-btn-primary {
+  background-color: #3b82f6 !important; /* blue-600 */
+  color: white !important;
+}
+
+.theme-btn-primary:hover:not(:disabled) {
+  background-color: #2563eb !important; /* blue-700 */
+}
+
+.theme-btn-primary:disabled {
+  background-color: #d1d5db !important; /* gray-300 */
+  color: #6b7280 !important; /* gray-500 */
+  cursor: not-allowed !important;
+}
+
+:root.dark .theme-btn-primary {
+  background-color: #2563eb !important; /* darker blue for dark mode */
+}
+
+:root.dark .theme-btn-primary:hover:not(:disabled) {
+  background-color: #1d4ed8 !important; /* blue-800 */
+}
+
+:root.dark .theme-btn-primary:disabled {
+  background-color: #374151 !important; /* gray-700 for dark mode */
+  color: #9ca3af !important; /* gray-400 for dark mode */
+}
+
+.theme-btn-success {
+  background-color: #059669 !important; /* emerald-600 */
+  color: white !important;
+}
+
+.theme-btn-success:hover:not(:disabled) {
+  background-color: #047857 !important; /* emerald-700 */
+}
+
+.theme-btn-success:disabled {
+  background-color: #d1d5db !important; /* gray-300 */
+  color: #6b7280 !important; /* gray-500 */
+  cursor: not-allowed !important;
+}
+
+:root.dark .theme-btn-success {
+  background-color: #047857 !important; /* darker emerald for dark mode */
+}
+
+:root.dark .theme-btn-success:hover:not(:disabled) {
+  background-color: #065f46 !important; /* emerald-800 */
+}
+
+:root.dark .theme-btn-success:disabled {
+  background-color: #374151 !important; /* gray-700 for dark mode */
+  color: #9ca3af !important; /* gray-400 for dark mode */
+}
+
+.theme-btn-warning {
+  background-color: #dc2626 !important; /* red-600 for reset button */
+  color: white !important;
+}
+
+.theme-btn-warning:hover:not(:disabled) {
+  background-color: #b91c1c !important; /* red-700 */
+}
+
+.theme-btn-warning:disabled {
+  background-color: #d1d5db !important; /* gray-300 */
+  color: #6b7280 !important; /* gray-500 */
+  cursor: not-allowed !important;
+}
+
+:root.dark .theme-btn-warning {
+  background-color: #b91c1c !important; /* darker red for dark mode */
+}
+
+:root.dark .theme-btn-warning:hover:not(:disabled) {
+  background-color: #991b1b !important; /* red-800 */
+}
+
+:root.dark .theme-btn-warning:disabled {
+  background-color: #374151 !important; /* gray-700 for dark mode */
+  color: #9ca3af !important; /* gray-400 for dark mode */
+}
+
+/* 清除按钮样式 */
+.theme-btn-clear {
+  background-color: transparent !important;
+  color: var(--text-secondary) !important;
+  border: none !important;
+}
+
+.theme-btn-clear:hover {
+  background-color: var(--bg-primary) !important;
+  color: var(--text-primary) !important;
+}
+
+/* 删除按钮样式 */
+.theme-btn-delete {
+  background-color: transparent !important;
+  color: #dc2626 !important; /* red-600 */
+  border: none !important;
+}
+
+.theme-btn-delete:hover {
+  background-color: #fef2f2 !important; /* red-50 */
+  color: #b91c1c !important; /* red-700 */
+}
+
+:root.dark .theme-btn-delete {
+  color: #f87171 !important; /* red-400 for dark mode */
+}
+
+:root.dark .theme-btn-delete:hover {
+  background-color: #7f1d1d !important; /* red-900 for dark mode */
+  color: #fca5a5 !important; /* red-300 for dark mode */
+}
+
+/* 标签按钮样式 */
+.theme-tab-button {
+  background-color: transparent !important;
+  color: var(--text-tertiary) !important;
+  border-bottom: 2px solid transparent !important;
+}
+
+.theme-tab-button:hover {
+  background-color: var(--bg-primary) !important;
+  color: var(--text-secondary) !important;
+}
+
+.theme-tab-button.active {
+  background-color: #eff6ff !important; /* blue-50 */
+  color: #2563eb !important; /* blue-600 */
+  border-bottom-color: #3b82f6 !important; /* blue-500 */
+}
+
+:root.dark .theme-tab-button.active {
+  background-color: rgba(30, 58, 138, 0.3) !important; /* blue-900/30 */
+  color: #60a5fa !important; /* blue-400 */
+  border-bottom-color: #3b82f6 !important; /* blue-500 */
+}
+
+/* 次要按钮样式 */
+.theme-btn-secondary {
+  background-color: var(--bg-secondary) !important;
+  color: var(--text-secondary) !important;
+  border: 1px solid var(--border-primary) !important;
+}
+
+.theme-btn-secondary:hover {
+  background-color: var(--bg-primary) !important;
+  color: var(--text-primary) !important;
+}
+
+/* 选择框选项 */
+select option {
+  background-color: var(--input-bg) !important;
+  color: var(--input-text) !important;
+}
+
+/* 过渡效果 */
 * {
-  box-sizing: border-box;
+  transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease;
 }
 
-/* 滚动条样式 */
-::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
+/* 统一的输入框样式类 */
+.theme-input-base {
+  background-color: var(--input-bg) !important;
+  border-color: var(--input-border) !important;
+  color: var(--input-text) !important;
 }
 
-::-webkit-scrollbar-track {
-  background: #f1f1f1;
+.theme-input-base:focus {
+  border-color: var(--input-focus-border) !important;
+  box-shadow: 0 0 0 3px var(--input-focus-ring) !important;
+  outline: none !important;
 }
 
-::-webkit-scrollbar-thumb {
-  background: #888;
-  border-radius: 3px;
+.theme-input-base:disabled {
+  background-color: var(--bg-secondary) !important;
+  opacity: 0.6 !important;
+  cursor: not-allowed !important;
 }
 
-::-webkit-scrollbar-thumb:hover {
-  background: #555;
+.theme-input-base::placeholder {
+  color: var(--input-placeholder) !important;
+}
+
+/* 复选框和单选框样式 */
+.theme-checkbox {
+  background-color: var(--input-bg) !important;
+  border-color: var(--input-border) !important;
+}
+
+.theme-checkbox:checked {
+  background-color: #3b82f6 !important;
+  border-color: #3b82f6 !important;
 } 

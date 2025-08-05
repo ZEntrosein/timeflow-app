@@ -505,6 +505,7 @@ export interface TimelineQueryOptions {
 
 // 导入和重新导出类型
 import type { ViewType, InspectorPanel, ObjectType, LayoutArea } from '../constants/views';
+import type { ToastMessage } from '../components/UI/Toast';
 export type { ViewType, InspectorPanel, ObjectType, LayoutArea };
 
 /**
@@ -561,6 +562,9 @@ export interface UIState {
     targetType?: 'event' | 'object' | 'canvas';
     targetId?: string;
   };
+  
+  /** Toast通知列表 */
+  toasts: ToastMessage[];
 }
 
 /**

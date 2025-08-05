@@ -11,9 +11,11 @@ export const Sidebar: React.FC = () => {
     selectedObjectType,
     openObjectListDialog, 
     closeObjectListDialog,
-    openAddObjectDialog
+    openAddObjectDialog,
+    getCurrentTheme
   } = useUIStore();
   
+  const currentTheme = getCurrentTheme();
   const objects = getObjects();
 
   // 按类型统计对象数量
@@ -53,47 +55,45 @@ export const Sidebar: React.FC = () => {
 
   return (
     <>
-      <div className="h-full flex flex-col bg-white">
+      <div className={`h-full flex flex-col ${currentTheme.ui.panel}`}>
         {/* 侧边栏标题 */}
-        <div className="h-10 bg-gray-50 border-b border-gray-200 flex items-center px-3">
-          <h3 className="text-sm font-medium text-gray-700">对象管理</h3>
+        <div className={`h-12 ${currentTheme.background.secondary} ${currentTheme.border.secondary} border-b flex items-center px-4 shadow-sm`}>
+          <h3 className={`text-sm font-semibold ${currentTheme.text.primary}`}>对象管理</h3>
         </div>
 
         {/* 对象类别面板 */}
         <div className="flex-1 overflow-y-auto">
-          <div className="p-3">
-            <div className="text-xs font-medium text-gray-500 uppercase tracking-wide mb-3">
+          <div className="p-4">
+            <div className={`text-xs font-medium ${currentTheme.text.tertiary} uppercase tracking-wide mb-4`}>
               对象类别
             </div>
             
-            <div className="space-y-2">
+            <div className="space-y-3">
               {Object.entries(objectCounts).map(([type, count]) => (
                 <div
                   key={type}
                   onClick={() => handleCategoryClick(type)}
-                  className="flex items-center justify-between p-3 rounded-lg border border-gray-200 hover:border-blue-300 hover:bg-blue-50 cursor-pointer transition-all duration-200 group"
-                  style={{
-                    boxShadow: '0 1px 3px rgba(0, 0, 0, 0.1)'
-                  }}
+                  className={`flex items-center justify-between p-4 rounded-xl ${currentTheme.background.secondary} ${currentTheme.border.secondary} border-2 hover:border-blue-400 hover:${currentTheme.background.primary} cursor-pointer transition-all duration-200 group shadow-sm hover:shadow-md transform hover:scale-102`}
                 >
                   <div className="flex items-center space-x-3">
-                    <div className="text-lg">
+                    <div className="text-xl transition-transform duration-200 group-hover:scale-110">
                       {getCategoryIcon(type)}
                     </div>
                     <div>
-                      <div className="text-sm font-medium text-gray-800">
+                      <div className={`font-medium ${currentTheme.text.primary} group-hover:${currentTheme.text.primary}`}>
                         {getTypeLabel(type)}
                       </div>
-                      <div className="text-xs text-gray-500">
+                      <div className={`text-xs ${currentTheme.text.tertiary} group-hover:${currentTheme.text.secondary}`}>
                         {count === 0 ? '暂无对象' : `${count} 个对象`}
                       </div>
                     </div>
                   </div>
-                  <div className="flex items-center">
-                    <span className="text-sm font-bold text-blue-600 bg-blue-100 px-2 py-1 rounded-full">
+                  
+                  <div className="flex items-center space-x-2">
+                    <span className={`inline-flex items-center justify-center min-w-6 h-6 text-xs font-bold ${currentTheme.text.primary} ${currentTheme.background.primary} rounded-full px-2 transition-colors duration-200`}>
                       {count}
                     </span>
-                    <div className="ml-2 text-gray-400 group-hover:text-blue-500">
+                    <div className={`text-sm ${currentTheme.text.tertiary} group-hover:${currentTheme.text.secondary} transition-colors duration-200`}>
                       →
                     </div>
                   </div>
@@ -102,54 +102,24 @@ export const Sidebar: React.FC = () => {
             </div>
           </div>
 
-          {/* 统计信息 */}
-          <div className="mx-3 p-3 bg-gray-50 rounded-lg border">
-            <div className="text-xs font-medium text-gray-600 mb-2">项目统计</div>
-            <div className="space-y-1 text-xs text-gray-500">
-              <div className="flex justify-between">
-                <span>总对象数：</span>
-                <span className="font-medium text-gray-700">{objects.length}</span>
-              </div>
-              <div className="flex justify-between">
-                <span>有效类别：</span>
-                <span className="font-medium text-gray-700">
-                  {Object.values(objectCounts).filter(count => count > 0).length}
-                </span>
-              </div>
-            </div>
-          </div>
-
-          {/* 空状态 */}
-          {objects.length === 0 && (
-            <div className="mx-3 mt-6 text-center">
-              <div className="text-gray-400 mb-2 text-2xl">🎭</div>
-              <div className="text-sm text-gray-500 mb-1">暂无任何对象</div>
-              <div className="text-xs text-gray-400">
-                点击下方按钮开始创建
-              </div>
-            </div>
-          )}
-        </div>
-
-        {/* 底部操作 */}
-        <div className="border-t border-gray-200 p-3">
-          <button 
-            onClick={() => openAddObjectDialog()}
-            className="w-full py-2 px-4 text-sm bg-blue-500 text-white hover:bg-blue-600 rounded-lg transition-colors duration-200 font-medium"
-          >
-            + 创建新对象
-          </button>
-          <div className="text-xs text-gray-400 text-center mt-2">
-            💡 点击类别查看详细列表
+          {/* 底部操作按钮 */}
+          <div className={`p-4 ${currentTheme.border.secondary} border-t mt-auto`}>
+            <button
+              onClick={openAddObjectDialog}
+              className="w-full px-4 py-3 theme-btn-primary rounded-xl transition-all duration-200 shadow-md hover:shadow-lg transform hover:scale-105 font-medium"
+            >
+              <span className="mr-2">➕</span>
+              添加新对象
+            </button>
           </div>
         </div>
       </div>
 
-      {/* 对象列表弹窗 */}
-      <ObjectListDialog
-        isOpen={dialogs.objectList}
-        onClose={closeObjectListDialog}
+      {/* 对象列表对话框 */}
+      <ObjectListDialog 
+        isOpen={dialogs.objectList} 
         objectType={selectedObjectType}
+        onClose={closeObjectListDialog} 
       />
     </>
   );

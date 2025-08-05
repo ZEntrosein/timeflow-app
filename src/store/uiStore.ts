@@ -10,6 +10,7 @@ import {
 } from '../types';
 import { VIEW_TYPES, INSPECTOR_PANELS, LAYOUT_AREAS } from '../constants/views';
 import { themes, ThemeName, type Theme } from '../constants/themes';
+import { ToastMessage } from '../components/UI/Toast';
 
 // 默认布局配置
 const defaultLayoutConfig: LayoutConfig = {
@@ -61,6 +62,7 @@ const defaultUIState: UIState = {
     targetType: undefined,
     targetId: undefined,
   },
+  toasts: [],
 };
 
 export interface UIStore extends UIState {
@@ -119,6 +121,11 @@ export interface UIStore extends UIState {
   
   // 重置功能
   resetUI: () => void;
+
+  // Toast 通知系统
+  addToast: (toast: Omit<ToastMessage, 'id'>) => void;
+  removeToast: (id: string) => void;
+  clearToasts: () => void;
 }
 
 export const useUIStore = create<UIStore>()(
@@ -130,10 +137,27 @@ export const useUIStore = create<UIStore>()(
       setCurrentView: (view) => set({ currentView: view }),
       
       // 主题管理
-      setTheme: (theme) => set({ currentTheme: theme }),
-      toggleTheme: () => set((state) => ({
-        currentTheme: state.currentTheme === 'light' ? 'dark' : 'light'
-      })),
+      setTheme: (theme) => {
+        set({ currentTheme: theme });
+        // 更新HTML根元素的class
+        if (theme === 'dark') {
+          document.documentElement.classList.add('dark');
+        } else {
+          document.documentElement.classList.remove('dark');
+        }
+      },
+      toggleTheme: () => {
+        const currentTheme = get().currentTheme;
+        const newTheme = currentTheme === 'light' ? 'dark' : 'light';
+        // 更新状态
+        set({ currentTheme: newTheme });
+        // 更新HTML根元素的class
+        if (newTheme === 'dark') {
+          document.documentElement.classList.add('dark');
+        } else {
+          document.documentElement.classList.remove('dark');
+        }
+      },
       getCurrentTheme: () => themes[get().currentTheme as ThemeName],
       
       // 对话框管理
@@ -296,6 +320,27 @@ export const useUIStore = create<UIStore>()(
       
       // 重置功能
       resetUI: () => set(defaultUIState),
+
+      // Toast 通知系统
+      addToast: (toast) => {
+        const newToast: ToastMessage = {
+          ...toast,
+          id: Date.now().toString() + Math.random().toString(36).substr(2, 9),
+        };
+        set((state) => ({
+          toasts: [...state.toasts, newToast],
+        }));
+      },
+
+      removeToast: (id) => {
+        set((state) => ({
+          toasts: state.toasts.filter((toast) => toast.id !== id),
+        }));
+      },
+
+      clearToasts: () => {
+        set({ toasts: [] });
+      },
     }),
     {
       name: 'ui-store',

@@ -219,10 +219,10 @@ export const TimelineView: React.FC = () => {
   // 如果project为null，显示加载状态
   if (!project) {
     return (
-      <div className="w-full h-full flex items-center justify-center bg-gray-50">
+      <div className={`w-full h-full flex items-center justify-center ${currentTheme.background.primary}`}>
         <div className="text-center">
-          <div className="text-lg text-gray-600 mb-2">正在初始化项目...</div>
-          <div className="text-sm text-gray-400">请稍候</div>
+          <div className={`text-lg ${currentTheme.text.secondary} mb-2`}>正在初始化项目...</div>
+          <div className={`text-sm ${currentTheme.text.tertiary}`}>请稍候</div>
         </div>
       </div>
     );
@@ -253,25 +253,23 @@ export const TimelineView: React.FC = () => {
         </div>
         
         <div className="flex items-center space-x-3 flex-shrink-0 ml-4">
-          {/* 确保右侧控件不被挤压 */}
-          {hasAnySelection && (
-            <div className={`flex items-center space-x-2 px-2 py-1 rounded border ${currentTheme.background.secondary}`} style={{
-              backgroundColor: currentTheme.name === 'light' ? '#eff6ff' : '#1e3a8a',
-              color: currentTheme.name === 'light' ? '#1d4ed8' : '#93c5fd',
-              borderColor: currentTheme.name === 'light' ? '#dbeafe' : '#1e40af'
-            }}>
-              已选择: {selectedEvents.length} 事件
+          {/* 选择状态显示 */}
+          {hasSelection() && selectedEvents.length > 0 && (
+            <div className="flex items-center space-x-2 px-3 py-1 rounded theme-bg-secondary theme-border-primary border">
+              <span className="text-xs theme-text-primary">
+                已选择: {selectedEvents.length} 事件
+              </span>
               <button 
                 onClick={clearSelection}
-                className="ml-1 hover:opacity-80"
-                style={{ color: currentTheme.name === 'light' ? '#3b82f6' : '#60a5fa' }}
+                className="ml-1 text-xs px-2 py-1 rounded theme-btn-clear transition-colors duration-200"
+                title="清除选择"
               >
                 清除
               </button>
               <button 
                 onClick={handleDeleteSelected}
-                className="ml-1 hover:opacity-80"
-                style={{ color: currentTheme.name === 'light' ? '#ef4444' : '#f87171' }}
+                className="ml-1 text-xs px-2 py-1 rounded theme-btn-delete transition-colors duration-200"
+                title="删除选中事件"
               >
                 删除
               </button>
@@ -281,14 +279,16 @@ export const TimelineView: React.FC = () => {
         <div className="flex items-center space-x-2">
           <button 
               onClick={() => openAddEventDialog()}
-              className={`px-3 py-1 rounded text-xs hover:opacity-80 ${currentTheme.name === 'light' ? 'bg-blue-500 text-white' : 'bg-blue-600 text-blue-100'}`}
+              className="px-3 py-1 rounded text-xs theme-btn-primary transition-colors duration-200 shadow-sm"
+              title="添加新事件"
             >
               + 事件
           </button>
           <button 
             onClick={handleResetView}
-              className={`px-2 py-1 border rounded text-xs hover:opacity-80 ${currentTheme.background.secondary} ${currentTheme.border.primary} ${currentTheme.text.secondary}`}
-          >
+              className="px-2 py-1 rounded text-xs theme-btn-secondary transition-colors duration-200"
+              title="重置视图"
+            >
             重置视图
           </button>
           </div>

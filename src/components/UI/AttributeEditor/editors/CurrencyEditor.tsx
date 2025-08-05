@@ -23,7 +23,7 @@ export const CurrencyEditor: React.FC<CurrencyEditorProps> = (props) => {
 
   return (
     <div className="flex items-center">
-      <span className="px-3 py-2 bg-gray-100 border border-r-0 border-gray-300 rounded-l-md text-gray-600">
+      <span className="px-3 py-2 theme-bg-secondary border theme-border-primary border-r-0 rounded-l-md theme-text-tertiary">
         {currency}
       </span>
       <input

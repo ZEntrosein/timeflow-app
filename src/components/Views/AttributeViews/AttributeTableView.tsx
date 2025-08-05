@@ -234,7 +234,7 @@ export const AttributeTableView: React.FC<AttributeTableViewProps> = ({
           </thead>
           
           {/* 表体 */}
-          <tbody className="bg-white divide-y divide-gray-200">
+          <tbody className="theme-bg-secondary divide-y theme-border-secondary">
             {sortedData.map((item) => (
               <tr
                 key={item.id}
