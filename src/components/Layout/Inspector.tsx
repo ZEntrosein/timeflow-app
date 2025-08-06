@@ -399,7 +399,7 @@ export const Inspector: React.FC = () => {
   // 自动保存处理器
   const handleAutoSave = (data: any) => {
     if (!singleItem || !data) return;
-
+    
     try {
       if (singleItem.type === 'event') {
         updateEvent(singleItem.id, data);
@@ -540,7 +540,7 @@ export const Inspector: React.FC = () => {
               error={errors.tags}
             />
           </>
-        ) : (
+            ) : (
           <>
             <EditableField
               label="名称"

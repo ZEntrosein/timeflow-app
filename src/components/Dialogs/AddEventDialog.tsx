@@ -108,13 +108,13 @@ export const AddEventDialog: React.FC<AddEventDialogProps> = ({ isOpen, onClose 
   return (
     <div 
       onClick={handleBackdropClick}
+      className="theme-modal-backdrop"
       style={{
         position: 'absolute',
         top: 0,
         left: 0,
         right: 0,
         bottom: 0,
-        backgroundColor: 'rgba(0, 0, 0, 0.6)',
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
@@ -123,11 +123,9 @@ export const AddEventDialog: React.FC<AddEventDialogProps> = ({ isOpen, onClose 
     >
       <div 
         onClick={(e) => e.stopPropagation()}
+        className="theme-modal-dialog"
         style={{
-          backgroundColor: 'white',
           borderRadius: '12px',
-          boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25)',
-          border: '2px solid #e5e7eb',
           width: '90%',
           maxWidth: '600px',
           maxHeight: '90%',
@@ -136,9 +134,8 @@ export const AddEventDialog: React.FC<AddEventDialogProps> = ({ isOpen, onClose 
       >
         {/* 标题栏 */}
         <div 
+          className="theme-modal-header"
           style={{
-            backgroundColor: '#f9fafb',
-            borderBottom: '2px solid #e5e7eb',
             borderTopLeftRadius: '12px',
             borderTopRightRadius: '12px',
             padding: '20px',
@@ -147,23 +144,21 @@ export const AddEventDialog: React.FC<AddEventDialogProps> = ({ isOpen, onClose 
             justifyContent: 'space-between'
           }}
         >
-          <h2 style={{ fontSize: '20px', fontWeight: 'bold', color: '#1f2937', margin: 0 }}>
+          <h2 style={{ fontSize: '20px', fontWeight: 'bold', margin: 0 }}>
             添加新事件
           </h2>
           <button
             onClick={onClose}
+            className="theme-modal-close-btn"
             style={{
               width: '32px',
               height: '32px',
               borderRadius: '50%',
-              border: '1px solid #d1d5db',
-              backgroundColor: 'white',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
               cursor: 'pointer',
-              fontSize: '20px',
-              color: '#6b7280'
+              fontSize: '20px'
             }}
           >
             ×
@@ -174,7 +169,6 @@ export const AddEventDialog: React.FC<AddEventDialogProps> = ({ isOpen, onClose 
         <form 
           onSubmit={handleSubmit} 
           style={{
-            backgroundColor: 'white',
             borderBottomLeftRadius: '12px',
             borderBottomRightRadius: '12px',
             padding: '20px'
@@ -183,11 +177,10 @@ export const AddEventDialog: React.FC<AddEventDialogProps> = ({ isOpen, onClose 
           {/* 基本信息 */}
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px', marginBottom: '20px' }}>
             <div style={{ gridColumn: '1 / -1' }}>
-              <label style={{ 
+              <label className="theme-form-label" style={{ 
                 display: 'block', 
                 fontSize: '14px', 
                 fontWeight: '500', 
-                color: '#374151', 
                 marginBottom: '8px' 
               }}>
                 事件标题 *
@@ -196,33 +189,27 @@ export const AddEventDialog: React.FC<AddEventDialogProps> = ({ isOpen, onClose 
                 type="text"
                 value={formData.title}
                 onChange={(e) => setFormData(prev => ({ ...prev, title: e.target.value }))}
+                className={`theme-form-input ${errors.title ? 'error' : ''}`}
                 style={{
                   width: '100%',
                   padding: '12px 16px',
-                  border: errors.title ? '2px solid #f87171' : '2px solid #d1d5db',
                   borderRadius: '8px',
-                  fontSize: '14px',
-                  backgroundColor: errors.title ? '#fef2f2' : 'white',
-                  color: '#1f2937',
-                  outline: 'none'
+                  fontSize: '14px'
                 }}
                 placeholder="输入事件标题"
-                onFocus={(e) => e.target.style.borderColor = '#3b82f6'}
-                onBlur={(e) => e.target.style.borderColor = errors.title ? '#f87171' : '#d1d5db'}
               />
               {errors.title && (
-                <p style={{ color: '#ef4444', fontSize: '12px', marginTop: '4px', fontWeight: '500' }}>
+                <p className="theme-form-error" style={{ fontSize: '12px', marginTop: '4px', fontWeight: '500' }}>
                   {errors.title}
                 </p>
               )}
             </div>
 
             <div>
-              <label style={{ 
+              <label className="theme-form-label" style={{ 
                 display: 'block', 
                 fontSize: '14px', 
                 fontWeight: '500', 
-                color: '#374151', 
                 marginBottom: '8px' 
               }}>
                 开始时间 *
@@ -231,33 +218,27 @@ export const AddEventDialog: React.FC<AddEventDialogProps> = ({ isOpen, onClose 
                 type="number"
                 value={formData.startTime}
                 onChange={(e) => setFormData(prev => ({ ...prev, startTime: Number(e.target.value) }))}
+                className={`theme-form-input ${errors.startTime ? 'error' : ''}`}
                 style={{
                   width: '100%',
                   padding: '12px 16px',
-                  border: errors.startTime ? '2px solid #f87171' : '2px solid #d1d5db',
                   borderRadius: '8px',
-                  fontSize: '14px',
-                  backgroundColor: errors.startTime ? '#fef2f2' : 'white',
-                  color: '#1f2937',
-                  outline: 'none'
+                  fontSize: '14px'
                 }}
                 placeholder="0"
-                onFocus={(e) => e.target.style.borderColor = '#3b82f6'}
-                onBlur={(e) => e.target.style.borderColor = errors.startTime ? '#f87171' : '#d1d5db'}
               />
               {errors.startTime && (
-                <p style={{ color: '#ef4444', fontSize: '12px', marginTop: '4px', fontWeight: '500' }}>
+                <p className="theme-form-error" style={{ fontSize: '12px', marginTop: '4px', fontWeight: '500' }}>
                   {errors.startTime}
                 </p>
               )}
             </div>
 
             <div>
-              <label style={{ 
+              <label className="theme-form-label" style={{ 
                 display: 'block', 
                 fontSize: '14px', 
                 fontWeight: '500', 
-                color: '#374151', 
                 marginBottom: '8px' 
               }}>
                 结束时间（可选）
@@ -266,33 +247,27 @@ export const AddEventDialog: React.FC<AddEventDialogProps> = ({ isOpen, onClose 
                 type="number"
                 value={formData.endTime}
                 onChange={(e) => setFormData(prev => ({ ...prev, endTime: Number(e.target.value) }))}
+                className={`theme-form-input ${errors.endTime ? 'error' : ''}`}
                 style={{
                   width: '100%',
                   padding: '12px 16px',
-                  border: errors.endTime ? '2px solid #f87171' : '2px solid #d1d5db',
                   borderRadius: '8px',
-                  fontSize: '14px',
-                  backgroundColor: errors.endTime ? '#fef2f2' : 'white',
-                  color: '#1f2937',
-                  outline: 'none'
+                  fontSize: '14px'
                 }}
                 placeholder="留空表示瞬时事件"
-                onFocus={(e) => e.target.style.borderColor = '#3b82f6'}
-                onBlur={(e) => e.target.style.borderColor = errors.endTime ? '#f87171' : '#d1d5db'}
               />
               {errors.endTime && (
-                <p style={{ color: '#ef4444', fontSize: '12px', marginTop: '4px', fontWeight: '500' }}>
+                <p className="theme-form-error" style={{ fontSize: '12px', marginTop: '4px', fontWeight: '500' }}>
                   {errors.endTime}
                 </p>
               )}
             </div>
 
             <div>
-              <label style={{ 
+              <label className="theme-form-label" style={{ 
                 display: 'block', 
                 fontSize: '14px', 
                 fontWeight: '500', 
-                color: '#374151', 
                 marginBottom: '8px' 
               }}>
                 事件类型
@@ -300,18 +275,13 @@ export const AddEventDialog: React.FC<AddEventDialogProps> = ({ isOpen, onClose 
               <select
                 value={formData.category}
                 onChange={(e) => setFormData(prev => ({ ...prev, category: e.target.value }))}
+                className="theme-form-input"
                 style={{
                   width: '100%',
                   padding: '12px 16px',
-                  border: '2px solid #d1d5db',
                   borderRadius: '8px',
-                  fontSize: '14px',
-                  backgroundColor: 'white',
-                  color: '#1f2937',
-                  outline: 'none'
+                  fontSize: '14px'
                 }}
-                onFocus={(e) => e.target.style.borderColor = '#3b82f6'}
-                onBlur={(e) => e.target.style.borderColor = '#d1d5db'}
               >
                 <option value="task">任务</option>
                 <option value="meeting">会议</option>
@@ -325,11 +295,10 @@ export const AddEventDialog: React.FC<AddEventDialogProps> = ({ isOpen, onClose 
             </div>
 
             <div>
-              <label style={{ 
+              <label className="theme-form-label" style={{ 
                 display: 'block', 
                 fontSize: '14px', 
                 fontWeight: '500', 
-                color: '#374151', 
                 marginBottom: '8px' 
               }}>
                 地点（可选）
@@ -338,30 +307,24 @@ export const AddEventDialog: React.FC<AddEventDialogProps> = ({ isOpen, onClose 
                 type="text"
                 value={formData.location}
                 onChange={(e) => setFormData(prev => ({ ...prev, location: e.target.value }))}
+                className="theme-form-input"
                 style={{
                   width: '100%',
                   padding: '12px 16px',
-                  border: '2px solid #d1d5db',
                   borderRadius: '8px',
-                  fontSize: '14px',
-                  backgroundColor: 'white',
-                  color: '#1f2937',
-                  outline: 'none'
+                  fontSize: '14px'
                 }}
                 placeholder="输入地点"
-                onFocus={(e) => e.target.style.borderColor = '#3b82f6'}
-                onBlur={(e) => e.target.style.borderColor = '#d1d5db'}
               />
             </div>
           </div>
 
           {/* 描述 */}
           <div style={{ marginBottom: '20px' }}>
-            <label style={{ 
+            <label className="theme-form-label" style={{ 
               display: 'block', 
               fontSize: '14px', 
               fontWeight: '500', 
-              color: '#374151', 
               marginBottom: '8px' 
             }}>
               事件描述
@@ -370,60 +333,50 @@ export const AddEventDialog: React.FC<AddEventDialogProps> = ({ isOpen, onClose 
               value={formData.description}
               onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
               rows={3}
+              className="theme-form-input"
               style={{
                 width: '100%',
                 padding: '12px 16px',
-                border: '2px solid #d1d5db',
                 borderRadius: '8px',
                 fontSize: '14px',
-                backgroundColor: 'white',
-                color: '#1f2937',
-                outline: 'none',
                 resize: 'vertical'
               }}
               placeholder="详细描述事件内容"
-              onFocus={(e) => e.target.style.borderColor = '#3b82f6'}
-              onBlur={(e) => e.target.style.borderColor = '#d1d5db'}
             />
           </div>
 
           {/* 参与者 */}
           <div style={{ marginBottom: '20px' }}>
-            <label style={{ 
+            <label className="theme-form-label" style={{ 
               display: 'block', 
               fontSize: '14px', 
               fontWeight: '500', 
-              color: '#374151', 
               marginBottom: '8px' 
             }}>
               参与对象
             </label>
-            <div style={{
-              border: '2px solid #d1d5db',
+            <div className="theme-participants-container" style={{
               borderRadius: '8px',
               padding: '16px',
               maxHeight: '128px',
-              overflowY: 'auto',
-              backgroundColor: '#f9fafb'
+              overflowY: 'auto'
             }}>
               {objects.length === 0 ? (
-                <p style={{ color: '#6b7280', fontSize: '14px', margin: 0 }}>暂无可选对象</p>
+                <p className="theme-form-label" style={{ fontSize: '14px', margin: 0 }}>暂无可选对象</p>
               ) : (
                 <div>
                   {objects.map((obj) => (
                     <label 
                       key={obj.id} 
+                      className="theme-participant-item"
                       style={{ 
                         display: 'flex', 
                         alignItems: 'center', 
                         padding: '8px', 
                         borderRadius: '4px',
                         marginBottom: '4px',
-                        cursor: 'pointer',
-                        backgroundColor: 'white'
+                        cursor: 'pointer'
                       }}
-                      onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#f3f4f6'}
-                      onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'white'}
                     >
                       <input
                         type="checkbox"
@@ -431,10 +384,10 @@ export const AddEventDialog: React.FC<AddEventDialogProps> = ({ isOpen, onClose 
                         onChange={() => handleParticipantToggle(obj.id)}
                         style={{ marginRight: '12px', width: '16px', height: '16px' }}
                       />
-                      <span style={{ fontSize: '14px', fontWeight: '500', color: '#1f2937' }}>
+                      <span style={{ fontSize: '14px', fontWeight: '500' }}>
                         {obj.name}
                       </span>
-                      <span style={{ fontSize: '12px', color: '#6b7280', marginLeft: '8px' }}>
+                      <span className="theme-participant-category" style={{ fontSize: '12px', marginLeft: '8px' }}>
                         ({obj.category})
                       </span>
                     </label>
@@ -446,11 +399,10 @@ export const AddEventDialog: React.FC<AddEventDialogProps> = ({ isOpen, onClose 
 
           {/* 标签 */}
           <div style={{ marginBottom: '24px' }}>
-            <label style={{ 
+            <label className="theme-form-label" style={{ 
               display: 'block', 
               fontSize: '14px', 
               fontWeight: '500', 
-              color: '#374151', 
               marginBottom: '8px' 
             }}>
               标签（用逗号分隔）
@@ -459,19 +411,14 @@ export const AddEventDialog: React.FC<AddEventDialogProps> = ({ isOpen, onClose 
               type="text"
               value={formData.tags}
               onChange={(e) => setFormData(prev => ({ ...prev, tags: e.target.value }))}
+              className="theme-form-input"
               style={{
                 width: '100%',
                 padding: '12px 16px',
-                border: '2px solid #d1d5db',
                 borderRadius: '8px',
-                fontSize: '14px',
-                backgroundColor: 'white',
-                color: '#1f2937',
-                outline: 'none'
+                fontSize: '14px'
               }}
               placeholder="例如：重要, 紧急, 设计"
-              onFocus={(e) => e.target.style.borderColor = '#3b82f6'}
-              onBlur={(e) => e.target.style.borderColor = '#d1d5db'}
             />
           </div>
 
@@ -481,41 +428,33 @@ export const AddEventDialog: React.FC<AddEventDialogProps> = ({ isOpen, onClose 
             justifyContent: 'flex-end', 
             gap: '12px', 
             paddingTop: '20px', 
-            borderTop: '2px solid #f3f4f6' 
+            borderTop: '2px solid var(--border-primary)' 
           }}>
             <button
               type="button"
               onClick={onClose}
+              className="theme-btn-cancel"
               style={{
                 padding: '12px 24px',
                 fontSize: '14px',
                 fontWeight: '500',
-                color: '#374151',
-                backgroundColor: '#f3f4f6',
-                border: '2px solid #d1d5db',
                 borderRadius: '8px',
                 cursor: 'pointer'
               }}
-              onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#e5e7eb'}
-              onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#f3f4f6'}
             >
               取消
             </button>
             <button
               type="submit"
+              className="theme-btn-submit-event"
               style={{
                 padding: '12px 24px',
                 fontSize: '14px',
                 fontWeight: '500',
-                color: 'white',
-                backgroundColor: '#3b82f6',
-                border: '2px solid #3b82f6',
                 borderRadius: '8px',
                 cursor: 'pointer',
                 boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)'
               }}
-              onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#2563eb'}
-              onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#3b82f6'}
             >
               添加事件
             </button>

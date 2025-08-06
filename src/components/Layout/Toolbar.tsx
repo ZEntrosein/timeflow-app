@@ -51,74 +51,74 @@ export const Toolbar: React.FC = () => {
   return (
     <>
       <div className="h-14 theme-toolbar theme-border-primary border-b flex items-center px-6 space-x-6 shadow-sm">
-        {/* 布局控制 */}
+      {/* 布局控制 */}
         <div className="flex space-x-3">
-          <button
-            onClick={toggleSidebar}
+        <button
+          onClick={toggleSidebar}
             className="px-4 py-2 text-sm theme-bg-secondary hover:theme-bg-primary rounded-lg transition-all duration-200 theme-text-secondary shadow-sm hover:shadow-md transform hover:scale-105 font-medium"
-            title="切换侧边栏"
-          >
+          title="切换侧边栏"
+        >
             <span className="mr-2">📂</span>
             侧边栏
-          </button>
-          <button
-            onClick={toggleInspector}
+        </button>
+        <button
+          onClick={toggleInspector}
             className="px-4 py-2 text-sm theme-bg-secondary hover:theme-bg-primary rounded-lg transition-all duration-200 theme-text-secondary shadow-sm hover:shadow-md transform hover:scale-105 font-medium"
-            title="切换检查器"
-          >
+          title="切换检查器"
+        >
             <span className="mr-2">🔍</span>
             检查器
-          </button>
-        </div>
+        </button>
+      </div>
 
-        {/* 分隔线 */}
+      {/* 分隔线 */}
         <div className="w-px h-8 theme-border-secondary opacity-50" />
 
-        {/* 视图切换 */}
+      {/* 视图切换 */}
         <div className="flex space-x-2">
-          {viewButtons.map((view) => (
-            <button
-              key={view.type}
-              onClick={() => setCurrentView(view.type as ViewType)}
+        {viewButtons.map((view) => (
+          <button
+            key={view.type}
+            onClick={() => setCurrentView(view.type as ViewType)}
               className={`px-4 py-2 text-sm rounded-lg transition-all duration-200 font-medium shadow-sm hover:shadow-md transform hover:scale-105 ${
-                currentView === view.type
+              currentView === view.type
                   ? 'theme-btn-primary shadow-md scale-105'
                   : 'theme-bg-secondary hover:theme-bg-primary theme-text-secondary'
-              }`}
-              title={view.label}
-            >
+            }`}
+            title={view.label}
+          >
               <span className="mr-2">{view.icon}</span>
-              {view.label}
-            </button>
-          ))}
-        </div>
+            {view.label}
+          </button>
+        ))}
+      </div>
 
-        {/* 分隔线 */}
+      {/* 分隔线 */}
         <div className="w-px h-8 theme-border-secondary opacity-50" />
 
-        {/* 缩放控制 */}
+      {/* 缩放控制 */}
         <div className="flex items-center space-x-3 theme-bg-secondary rounded-lg px-3 py-1 shadow-sm border theme-border-secondary">
-          <button
-            onClick={zoomOut}
+        <button
+          onClick={zoomOut}
             className="w-8 h-8 text-sm theme-bg-secondary hover:theme-bg-primary rounded-md transition-all duration-200 theme-text-secondary shadow-sm hover:shadow-md transform hover:scale-110 font-bold flex items-center justify-center"
             title="缩小时间轴 (显示更大时间范围)"
-          >
-            −
-          </button>
+        >
+          −
+        </button>
           <span className="text-sm theme-text-tertiary min-w-16 text-center font-mono font-medium" title="当前缩放级别">
-            {Math.round(zoomLevel * 100)}%
-          </span>
-          <button
-            onClick={zoomIn}
+          {Math.round(zoomLevel * 100)}%
+        </span>
+        <button
+          onClick={zoomIn}
             className="w-8 h-8 text-sm theme-bg-secondary hover:theme-bg-primary rounded-md transition-all duration-200 theme-text-secondary shadow-sm hover:shadow-md transform hover:scale-110 font-bold flex items-center justify-center"
             title="放大时间轴 (显示更小时间范围)"
-          >
-            +
-          </button>
-        </div>
+        >
+          +
+        </button>
+      </div>
 
         {/* Spacer */}
-        <div className="flex-1" />
+      <div className="flex-1" />
 
         {/* 时间轴操作按钮 - 仅在时间轴视图显示 */}
         {isTimelineView && (
@@ -162,7 +162,7 @@ export const Toolbar: React.FC = () => {
             title={`切换主题 (当前: ${currentTheme.name})`}
           >
             {isDark ? '🌞' : '🌙'}
-          </button>
+        </button>
 
           {/* 快捷键帮助 */}
           <button
@@ -172,9 +172,9 @@ export const Toolbar: React.FC = () => {
           >
             <span className="mr-2">⌨️</span>
             快捷键
-          </button>
-        </div>
+        </button>
       </div>
+    </div>
 
       {/* 快捷键面板 */}
       {showHelp && <HelpPanel isOpen={showHelp} onClose={() => setShowHelp(false)} />}

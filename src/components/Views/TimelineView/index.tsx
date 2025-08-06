@@ -281,14 +281,14 @@ export const TimelineView: React.FC = () => {
               onClick={() => openAddEventDialog()}
               className="px-3 py-1 rounded text-xs theme-btn-primary transition-colors duration-200 shadow-sm"
               title="添加新事件"
-            >
+          >
               + 事件
           </button>
           <button 
             onClick={handleResetView}
               className="px-2 py-1 rounded text-xs theme-btn-secondary transition-colors duration-200"
               title="重置视图"
-            >
+          >
             重置视图
           </button>
           </div>

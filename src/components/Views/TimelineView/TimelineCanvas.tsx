@@ -535,7 +535,7 @@ export const TimelineCanvas: React.FC<TimelineCanvasProps> = ({ width, height })
                   opacity={0.3}
                   dash={[1, 3]}
                   listening={false}
-                />
+          />
                 {/* 轨道标签 */}
                 <Text
                   x={dynamicTimelineArea.x - 20}

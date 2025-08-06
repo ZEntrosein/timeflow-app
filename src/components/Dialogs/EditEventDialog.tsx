@@ -141,13 +141,13 @@ export const EditEventDialog: React.FC<EditEventDialogProps> = ({ isOpen, onClos
   return (
     <div 
       onClick={handleBackdropClick}
+      className="theme-modal-backdrop"
       style={{
         position: 'absolute',
         top: 0,
         left: 0,
         right: 0,
         bottom: 0,
-        backgroundColor: 'rgba(0, 0, 0, 0.6)',
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
@@ -156,11 +156,9 @@ export const EditEventDialog: React.FC<EditEventDialogProps> = ({ isOpen, onClos
     >
       <div 
         onClick={(e) => e.stopPropagation()}
+        className="theme-modal-dialog"
         style={{
-          backgroundColor: 'white',
           borderRadius: '12px',
-          boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25)',
-          border: '2px solid #e5e7eb',
           width: '90%',
           maxWidth: '600px',
           maxHeight: '90%',
@@ -168,13 +166,11 @@ export const EditEventDialog: React.FC<EditEventDialogProps> = ({ isOpen, onClos
         }}
       >
         {/* 标题栏 */}
-        <div style={{
+        <div className="theme-modal-header" style={{
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'space-between',
           padding: '20px 24px',
-          borderBottom: '2px solid #f3f4f6',
-          backgroundColor: '#f9fafb',
           borderTopLeftRadius: '12px',
           borderTopRightRadius: '12px'
         }}>
@@ -183,21 +179,19 @@ export const EditEventDialog: React.FC<EditEventDialogProps> = ({ isOpen, onClos
             <h2 style={{ 
               fontSize: '20px', 
               fontWeight: '600', 
-              margin: 0, 
-              color: '#1f2937' 
+              margin: 0
             }}>
               编辑事件
             </h2>
           </div>
           <button
             onClick={handleCancel}
+            className="theme-modal-close-btn"
             style={{
               width: '32px',
               height: '32px',
               borderRadius: '8px',
               border: 'none',
-              backgroundColor: '#f3f4f6',
-              color: '#6b7280',
               cursor: 'pointer',
               display: 'flex',
               alignItems: 'center',

@@ -18,7 +18,7 @@ function App() {
   }, [currentTheme]);
 
   return (
-    <MainLayout />
+      <MainLayout />
   );
 }
 

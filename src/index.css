@@ -35,6 +35,28 @@
   --select-border: #d1d5db;
   --select-text: #111827;
   --select-arrow: #6b7280;
+
+  /* 模态框相关 */
+  --modal-backdrop: rgba(0, 0, 0, 0.6);
+  --modal-bg: #ffffff;
+  --modal-border: #e5e7eb;
+  --modal-header-bg: #f9fafb;
+  --modal-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+  
+  /* 表单控件 */
+  --form-input-bg: #ffffff;
+  --form-input-bg-error: #fef2f2;
+  --form-input-border: #d1d5db;
+  --form-input-border-focus: #3b82f6;
+  --form-input-border-error: #f87171;
+  --form-participant-bg: #f9fafb;
+  --form-participant-item-bg: #ffffff;
+  --form-participant-item-hover: #f3f4f6;
+
+  /* 错误和状态 */
+  --error-text: #ef4444;
+  --success-color: #10b981;
+  --success-color-hover: #059669;
 }
 
 /* 深色主题 */
@@ -69,6 +91,28 @@
   --select-border: #4b5563;
   --select-text: #f9fafb;
   --select-arrow: #9ca3af;
+
+  /* 模态框相关 */
+  --modal-backdrop: rgba(0, 0, 0, 0.8);
+  --modal-bg: #374151;
+  --modal-border: #4b5563;
+  --modal-header-bg: #4b5563;
+  --modal-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+  
+  /* 表单控件 */
+  --form-input-bg: #4b5563;
+  --form-input-bg-error: #431a1a;
+  --form-input-border: #6b7280;
+  --form-input-border-focus: #3b82f6;
+  --form-input-border-error: #f87171;
+  --form-participant-bg: #4b5563;
+  --form-participant-item-bg: #6b7280;
+  --form-participant-item-hover: #9ca3af;
+
+  /* 错误和状态 */
+  --error-text: #f87171;
+  --success-color: #34d399;
+  --success-color-hover: #10b981;
 }
 
 /* 全局样式 */
@@ -443,4 +487,108 @@ select option {
 .theme-checkbox:checked {
   background-color: #3b82f6 !important;
   border-color: #3b82f6 !important;
+}
+
+/* 模态框主题类 */
+.theme-modal-backdrop {
+  background-color: var(--modal-backdrop);
+}
+
+.theme-modal-dialog {
+  background-color: var(--modal-bg);
+  border: 2px solid var(--modal-border);
+  box-shadow: var(--modal-shadow);
+  color: var(--text-primary);
+}
+
+.theme-modal-header {
+  background-color: var(--modal-header-bg);
+  border-bottom: 2px solid var(--modal-border);
+  color: var(--text-primary);
+}
+
+.theme-modal-close-btn {
+  background-color: var(--form-input-bg);
+  border: 1px solid var(--form-input-border);
+  color: var(--text-tertiary);
+}
+
+.theme-modal-close-btn:hover {
+  background-color: var(--form-participant-item-hover);
+}
+
+/* 表单元素主题类 */
+.theme-form-input {
+  background-color: var(--form-input-bg);
+  border: 2px solid var(--form-input-border);
+  color: var(--text-primary);
+}
+
+.theme-form-input:focus {
+  border-color: var(--form-input-border-focus);
+  outline: none;
+}
+
+.theme-form-input.error {
+  background-color: var(--form-input-bg-error);
+  border-color: var(--form-input-border-error);
+}
+
+.theme-form-label {
+  color: var(--text-secondary);
+}
+
+.theme-form-error {
+  color: var(--error-text);
+}
+
+.theme-participants-container {
+  background-color: var(--form-participant-bg);
+  border: 2px solid var(--form-input-border);
+}
+
+.theme-participant-item {
+  background-color: var(--form-participant-item-bg);
+  color: var(--text-primary);
+}
+
+.theme-participant-item:hover {
+  background-color: var(--form-participant-item-hover);
+}
+
+.theme-participant-category {
+  color: var(--text-tertiary);
+}
+
+/* 按钮主题类 */
+.theme-btn-cancel {
+  background-color: var(--bg-secondary);
+  border: 2px solid var(--border-primary);
+  color: var(--text-secondary);
+}
+
+.theme-btn-cancel:hover {
+  background-color: var(--bg-tertiary);
+}
+
+.theme-btn-submit-event {
+  background-color: var(--accent);
+  border: 2px solid var(--accent);
+  color: white;
+}
+
+.theme-btn-submit-event:hover {
+  background-color: var(--hover);
+  border-color: var(--hover);
+}
+
+.theme-btn-submit-object {
+  background-color: var(--success-color);
+  border: 2px solid var(--success-color);
+  color: white;
+}
+
+.theme-btn-submit-object:hover {
+  background-color: var(--success-color-hover);
+  border-color: var(--success-color-hover);
 } 
