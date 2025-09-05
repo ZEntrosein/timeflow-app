@@ -5,6 +5,7 @@ export const VIEW_TYPES = {
   RELATIONSHIP: 'relationship',
   SPATIAL: 'spatial',
   DIRECTOR: 'director',
+  DOCUMENTS: 'documents',
 } as const;
 
 export type ViewType = typeof VIEW_TYPES[keyof typeof VIEW_TYPES];

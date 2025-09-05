@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { useUIStore, useSelectionStore, useProjectStore } from '../../store';
+import { useUIStore, useSelectionStore, useProjectStore, useDialogStore } from '../../store';
 import { INSPECTOR_PANELS } from '../../constants/views';
 import { InspectorPanel, TimelineEvent, WorldObject, Attribute, AttributeType, AttributeValue } from '../../types';
 import { AttributeEditor } from '../UI/AttributeEditor/AttributeEditor';
 import { getTemplatesForObjectType, SYSTEM_TEMPLATES } from '../../constants/attributeTemplates';
+import { AddAttributeDialog } from '../Dialogs/AddAttributeDialog';
 
 // 格式化显示值 - 保留用于基础字段
 const formatDisplayValue = (value: any, type: 'text' | 'number' | 'textarea' = 'text') => {
@@ -183,6 +184,7 @@ export const Inspector: React.FC = () => {
   const { activeInspectorPanel, setActiveInspectorPanel } = useUIStore();
   const { getSelectedItems, getSelectedItemsByType, getSelectionCount, hasSelection } = useSelectionStore();
   const { getEvent, getObject, updateEvent, updateObject } = useProjectStore();
+  const { dialogs: { addAttribute: isAddAttributeDialogOpen }, openAddAttributeDialog, closeAddAttributeDialog } = useDialogStore();
 
   // 获取选择状态
   const hasAnySelection = hasSelection();
@@ -352,13 +354,15 @@ export const Inspector: React.FC = () => {
 
   // 属性操作处理器
   const handleAddAttribute = () => {
+    openAddAttributeDialog();
+  };
+
+  // 处理属性添加
+  const handleAttributeAdd = (attributeData: Omit<Attribute, 'id' | 'createdAt' | 'updatedAt'>) => {
     const now = new Date().toISOString();
     const newAttribute: Attribute = {
+      ...attributeData,
       id: `attr_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
-      name: '新属性',
-      type: AttributeType.TEXT,
-      value: '',
-      description: '',
       sortOrder: (formData.attributes?.length || 0) + 1,
       createdAt: now,
       updatedAt: now
@@ -702,6 +706,13 @@ export const Inspector: React.FC = () => {
           </div>
       )}
       </div>
+      
+      {/* 添加属性对话框 */}
+      <AddAttributeDialog
+        isOpen={isAddAttributeDialogOpen}
+        onClose={closeAddAttributeDialog}
+        onAdd={handleAttributeAdd}
+      />
     </div>
   );
 }; 

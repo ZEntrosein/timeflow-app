@@ -5,6 +5,7 @@ import { devtools } from 'zustand/middleware';
 export interface DialogState {
   addEvent: boolean;
   addObject: boolean;
+  addAttribute: boolean;
   editEvent: boolean;
   editObject: boolean;
   objectList: boolean;
@@ -43,12 +44,14 @@ export interface DialogStore {
   // 便捷方法
   openAddEventDialog: () => void;
   openAddObjectDialog: () => void;
+  openAddAttributeDialog: () => void;
   openEditEventDialog: (eventId: string) => void;
   openEditObjectDialog: (objectId: string) => void;
   openObjectListDialog: (objectType: string) => void;
   
   closeAddEventDialog: () => void;
   closeAddObjectDialog: () => void;
+  closeAddAttributeDialog: () => void;
   closeEditEventDialog: () => void;
   closeEditObjectDialog: () => void;
   closeObjectListDialog: () => void;
@@ -58,6 +61,7 @@ export interface DialogStore {
 const defaultDialogState: DialogState = {
   addEvent: false,
   addObject: false,
+  addAttribute: false,
   editEvent: false,
   editObject: false,
   objectList: false,
@@ -123,6 +127,11 @@ export const useDialogStore = create<DialogStore>()(
         openDialog('addObject');
       },
       
+      openAddAttributeDialog: () => {
+        const { openDialog } = get();
+        openDialog('addAttribute');
+      },
+      
       openEditEventDialog: (eventId) => {
         const { openDialog, setEditingEvent } = get();
         setEditingEvent(eventId);
@@ -149,6 +158,11 @@ export const useDialogStore = create<DialogStore>()(
       closeAddObjectDialog: () => {
         const { closeDialog } = get();
         closeDialog('addObject');
+      },
+      
+      closeAddAttributeDialog: () => {
+        const { closeDialog } = get();
+        closeDialog('addAttribute');
       },
       
       closeEditEventDialog: () => {

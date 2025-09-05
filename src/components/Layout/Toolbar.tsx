@@ -46,6 +46,8 @@ export const Toolbar: React.FC = () => {
     { type: VIEW_TYPES.RELATIONSHIP, label: '关系图', icon: '🕸️' },
     { type: VIEW_TYPES.SPATIAL, label: '空间图', icon: '🗺️' },
     { type: VIEW_TYPES.DIRECTOR, label: '导演台', icon: '🎬' },
+    { type: VIEW_TYPES.DOCUMENTS, label: '文档', icon: '📄' },
+    { type: 'tiptap-test', label: 'Tiptap测试', icon: '🧪' },
   ];
 
   return (

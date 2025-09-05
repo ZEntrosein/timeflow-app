@@ -4,7 +4,9 @@ import { VIEW_TYPES } from '../../constants/views';
 import { WorldObject, TimelineEvent } from '../../types';
 import { TimelineView } from '../Views/TimelineView';
 import { AttributeTableView } from '../Views/AttributeViews/AttributeTableView';
+import { DocumentsView } from '../Views/DocumentsView';
 import { searchByAttributes, FilterBuilder } from '../../utils/attributeSearch';
+import TiptapTestPage from '../TiptapTestPage';
 
 export const ViewContainer: React.FC = () => {
   const { currentView, getCurrentTheme } = useUIStore();
@@ -22,13 +24,17 @@ export const ViewContainer: React.FC = () => {
         return <SpatialView />;
       case VIEW_TYPES.DIRECTOR:
         return <DirectorView />;
+      case VIEW_TYPES.DOCUMENTS:
+        return <DocumentsView />;
+      case 'tiptap-test' as any:
+        return <TiptapTestPage />;
       default:
         return <TimelineView />;
     }
   };
 
   return (
-    <div className={`h-full w-full ${currentTheme.background.secondary}`}>
+    <div className={`h-full w-full ${currentTheme.background.secondary} overflow-auto`}>
       {renderCurrentView()}
     </div>
   );

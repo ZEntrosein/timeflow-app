@@ -768,3 +768,6 @@ export interface SelectedItem {
   /** 选中时间 */
   selectedAt: number;
 }
+
+// 导出富文本文档系统类型
+export * from './document';

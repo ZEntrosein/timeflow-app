@@ -7,7 +7,8 @@
 export { useProjectStore } from './projectStore';
 export { useViewStore } from './viewStore';
 export { useSelectionStore } from './selectionStore';
-
+export { useDocumentStore } from './documentStore';
+ 
 // UI 状态管理（模块化后）
 export { useDialogStore } from './ui/dialogStore';
 export { useThemeStore } from './ui/themeStore';
@@ -20,7 +21,7 @@ export { useUIStore } from './uiStore';
 // 类型导出
 export type { ProjectStore } from './projectStore';
 export type { ViewStore } from './viewStore';
-export type { SelectionStore } from './selectionStore';
+export type { SelectionStore } from './selectionStore'; 
 
 // UI 类型导出
 export type { DialogStore } from './ui/dialogStore';

@@ -7,7 +7,11 @@ export default defineConfig({
   plugins: [react()],
   server: {
     port: 3000,
-    open: true
+    open: true,
+    hmr: {
+      port: 3001, // 使用不同端口避免冲突
+      clientPort: 3001
+    }
   },
   build: {
     outDir: 'dist',
